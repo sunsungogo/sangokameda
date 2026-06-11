@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Box 100日 Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #111;
+    --fg: #f0ede8;
+    --muted: #666;
+    --accent: #E8472A;
+    --line: #2a2a2a;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Noto Sans JP', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-weight: 300; overflow-x: hidden; }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 0 40px; }
+
+  .back-bar {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .back-link {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.1s;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.2s;
+  }
+  h1 .accent { color: var(--accent); }
+  .hero-desc {
+    font-size: 15px;
+    line-height: 2.1;
+    max-width: 580px;
+    color: #bbb;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.4s;
+  }
+
+  /* COUNTER */
+  .counter-section {
+    padding: 60px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .counter-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .counter-card {
+    background: var(--bg);
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .counter-num {
+    font-family: var(--mono);
+    font-size: 48px;
+    font-weight: 300;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .counter-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+  }
+
+  /* SECTIONS */
+  section { padding: 64px 0; border-bottom: 1px solid var(--line); }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+  /* CONCEPT TEXT */
+  .concept-text {
+    font-family: var(--serif);
+    font-size: clamp(18px, 2.5vw, 24px);
+    line-height: 2;
+    color: #ddd;
+  }
+  .concept-text .hl { color: var(--accent); }
+
+  /* TIMELINE */
+  .timeline { display: grid; gap: 0; }
+  .tl-item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+    transition: padding-left 0.2s;
+  }
+  .tl-item:hover { padding-left: 8px; }
+  .tl-day {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    padding-top: 2px;
+  }
+  .tl-item h4 { font-size: 14px; font-weight: 400; margin-bottom: 6px; }
+  .tl-item p { font-size: 12px; color: var(--muted); line-height: 1.8; }
+
+  /* VISUAL GRID — 100 dots */
+  .dot-grid {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    gap: 4px;
+    margin: 32px 0;
+  }
+  .dot {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--line);
+    transition: background 0.3s;
+  }
+  .dot.active { background: var(--accent); }
+
+  /* REFLECTION */
+  .reflection-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .reflection-card {
+    background: var(--bg);
+    padding: 28px 24px;
+  }
+  .reflection-card .r-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .reflection-card p { font-size: 13px; color: #aaa; line-height: 1.9; }
+
+  /* REVEAL */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  footer { padding: 40px 0; text-align: center; }
+  footer p { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.2em; }
+
+  @media (max-width: 640px) {
+    .container { padding: 0 24px; }
+    .counter-grid { grid-template-columns: 1fr; }
+    .reflection-grid { grid-template-columns: 1fr; }
+    .tl-item { grid-template-columns: 60px 1fr; }
+    .dot-grid { grid-template-columns: repeat(10, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="back-bar">
+    <a class="back-link" href="sango_portfolio.html">← 亀田山瑚 Portfolio</a>
+  </div>
+
+  <div class="hero">
+    <p class="eyebrow">Installation / Personal Project — 2024</p>
+    <h1>Black Box<br><span class="accent">100日</span> Project</h1>
+    <p class="hero-desc">
+      中部大学構内に100日間にわたり作品を掲示し続けた個人プロジェクト。<br>
+      「継続すること」と「場を占有すること」が何を生み出すかを、自分自身で実験した。
+    </p>
+  </div>
+
+  <div class="counter-section reveal">
+    <div class="counter-grid">
+      <div class="counter-card">
+        <p class="counter-num">100</p>
+        <p class="counter-label">Days</p>
+      </div>
+      <div class="counter-card">
+        <p class="counter-num">1</p>
+        <p class="counter-label">Location</p>
+      </div>
+      <div class="counter-card">
+        <p class="counter-num">∞</p>
+        <p class="counter-label">Iterations</p>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <p class="section-label">Concept</p>
+    <div class="reveal">
+      <p class="concept-text">
+        「存在し続けること」は、主張することと同じか。<br>
+        誰にも頼まれていない場所に、<span class="hl">100日間</span>作品を置き続けることで、<br>
+        空間と関係者に何が起きるかを観察した。
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">100 Days — 記録</p>
+    <div class="dot-grid reveal" id="dotGrid"></div>
+    <div class="timeline reveal">
+      <div class="tl-item">
+        <span class="tl-day">Day 001</span>
+        <div>
+          <h4>設置開始</h4>
+          <p>中部大学構内の一角に最初の作品を設置。誰も気に留めない。</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-day">Day 010</span>
+        <div>
+          <h4>最初の反応</h4>
+          <p>通りすがりの学生が足を止めた。何かが始まった気がした。</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-day">Day 030</span>
+        <div>
+          <h4>場が馴染む</h4>
+          <p>作品がその場所の「当たり前」になりつつある。存在の定着。</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-day">Day 060</span>
+        <div>
+          <h4>変化の観察</h4>
+          <p>同じ場所を通る人の行動が少しずつ変わってきた。空間への作用を感じる。</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-day">Day 100</span>
+        <div>
+          <h4>完了</h4>
+          <p>100日間の記録を終える。「継続」そのものがコンテンツになっていた。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">Reflection</p>
+    <div class="reflection-grid reveal">
+      <div class="reflection-card">
+        <p class="r-label">発見したこと</p>
+        <p>継続することで「信頼」が生まれる。毎日そこにある、という事実が人の行動を変える。</p>
+      </div>
+      <div class="reflection-card">
+        <p class="r-label">人間関係との接続</p>
+        <p>これは人間関係にも言える。毎日少しずつ存在し続けることが、関係を深める最も確実な方法かもしれない。</p>
+      </div>
+      <div class="reflection-card">
+        <p class="r-label">次に活かしたこと</p>
+        <p>このプロジェクトの「継続設計」の思想は、その後のHabitus SyncやWS設計に直接活きている。</p>
+      </div>
+      <div class="reflection-card">
+        <p class="r-label">残った問い</p>
+        <p>場を占有することと、関係を築くことはどこまで似ているか。まだ答えは出ていない。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>← <a href="sango_portfolio.html" style="color:var(--muted); text-decoration:none;">Back to Portfolio</a></p>
+  </footer>
+</div>
+
+<script>
+// Generate 100 dots
+const grid = document.getElementById('dotGrid');
+for (let i = 0; i < 100; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'dot';
+  dot.dataset.index = i;
+  grid.appendChild(dot);
+}
+
+// Animate dots on reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      if (e.target.id === 'dotGrid') {
+        const dots = e.target.querySelectorAll('.dot');
+        dots.forEach((dot, i) => {
+          setTimeout(() => dot.classList.add('active'), i * 18);
+        });
+      }
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>

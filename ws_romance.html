@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>恋愛を、実験する。/ Love Analysis Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f3f0;
+    --fg: #111;
+    --muted: #888;
+    --accent: #E8472A;
+    --accent-light: #fce0d8;
+    --line: #ddd;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Noto Sans JP', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-weight: 300; overflow-x: hidden; }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 1; }
+
+  /* BACK */
+  .back-bar {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .back-link {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.1s;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(32px, 6vw, 58px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.2s;
+  }
+  .hero-sub {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.3s;
+  }
+  .hero-desc {
+    font-size: 15px;
+    line-height: 2;
+    max-width: 600px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.4s;
+  }
+  .status-badge {
+    display: inline-block;
+    margin-top: 24px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    padding: 6px 14px;
+    background: var(--accent);
+    color: #fff;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.5s;
+  }
+
+  /* SECTIONS */
+  section { padding: 64px 0; border-bottom: 1px solid var(--line); }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+  /* CONCEPT */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-bottom: 40px;
+  }
+  .concept-card {
+    background: var(--bg);
+    padding: 28px 24px;
+  }
+  .concept-num {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--accent);
+    opacity: 0.4;
+    margin-bottom: 12px;
+  }
+  .concept-card h3 { font-family: var(--serif); font-size: 17px; margin-bottom: 10px; }
+  .concept-card p { font-size: 12px; color: var(--muted); line-height: 1.8; }
+
+  /* AXIS */
+  .axis-list { display: grid; gap: 0; }
+  .axis-item {
+    display: grid;
+    grid-template-columns: 40px 1fr 80px;
+    gap: 20px;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .axis-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+  }
+  .axis-name { font-size: 14px; }
+  .axis-bar-wrap {
+    height: 3px;
+    background: var(--line);
+    position: relative;
+  }
+  .axis-bar {
+    height: 3px;
+    background: var(--accent);
+    transition: width 1s ease;
+    width: 0;
+  }
+
+  /* FLOW */
+  .flow-list { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .flow-item {
+    background: var(--bg);
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .flow-step {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .flow-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .flow-item p { font-size: 12px; color: var(--muted); line-height: 1.8; }
+
+  /* CTA */
+  .cta-section { padding: 64px 0; text-align: center; }
+  .cta-section p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.8; }
+  .cta-btn {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    padding: 14px 32px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .cta-btn:hover { background: #c23518; }
+
+  /* REVEAL */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 640px) {
+    .container { padding: 0 24px; }
+    .concept-grid { grid-template-columns: 1fr; }
+    .axis-item { grid-template-columns: 30px 1fr; }
+    .axis-bar-wrap { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="back-bar">
+    <a class="back-link" href="sango_portfolio.html">← 亀田山瑚 Portfolio</a>
+  </div>
+
+  <div class="hero">
+    <p class="eyebrow">Workshop / Research Project — 2025–</p>
+    <h1>恋愛を、実験する。</h1>
+    <p class="hero-sub">Love Analysis Project</p>
+    <p class="hero-desc">
+      「好きになる」「告白する」「距離が縮まる」——恋愛の各フェーズを仮説と実験で分解する。<br>
+      感覚や運に委ねるのではなく、自分なりのデータと設計で、恋愛を「学習できるもの」にする試み。
+    </p>
+    <span class="status-badge">Now Running</span>
+  </div>
+
+  <section>
+    <p class="section-label">Concept</p>
+    <div class="concept-grid reveal">
+      <div class="concept-card">
+        <p class="concept-num">01</p>
+        <h3>仮説を立てる</h3>
+        <p>「なぜ好きになるのか」「どんな瞬間に関係が変わるのか」を言語化し、自分なりの仮説をつくる。</p>
+      </div>
+      <div class="concept-card">
+        <p class="concept-num">02</p>
+        <h3>低コストで試す</h3>
+        <p>失敗しても大丈夫な小さな実験を設計する。完璧な告白より、小さな接触の積み重ねを検証する。</p>
+      </div>
+      <div class="concept-card">
+        <p class="concept-num">03</p>
+        <h3>振り返って更新する</h3>
+        <p>うまくいかなかった理由を感情論ではなく構造で分析し、次の仮説に活かす。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">6 Axis — 恋愛を測る6つの軸</p>
+    <div class="axis-list reveal">
+      <div class="axis-item">
+        <span class="axis-num">01</span>
+        <span class="axis-name">自己開示度 — どれだけ自分を見せているか</span>
+        <div class="axis-bar-wrap"><div class="axis-bar" data-w="85"></div></div>
+      </div>
+      <div class="axis-item">
+        <span class="axis-num">02</span>
+        <span class="axis-name">相手理解度 — 相手のことをどれだけ知っているか</span>
+        <div class="axis-bar-wrap"><div class="axis-bar" data-w="70"></div></div>
+      </div>
+      <div class="axis-item">
+        <span class="axis-num">03</span>
+        <span class="axis-name">接触頻度 — どれくらいの頻度で関わっているか</span>
+        <div class="axis-bar-wrap"><div class="axis-bar" data-w="60"></div></div>
+      </div>
+      <div class="axis-item">
+        <span class="axis-num">04</span>
+        <span class="axis-name">感情の強度 — 今どれくらい気になっているか</span>
+        <div class="axis-bar-wrap"><div class="axis-bar" data-w="90"></div></div>
+      </div>
+      <div class="axis-item">
+        <span class="axis-num">05</span>
+        <span class="axis-name">行動変容度 — 相手のために行動が変わっているか</span>
+        <div class="axis-bar-wrap"><div class="axis-bar" data-w="50"></div></div>
+      </div>
+      <div class="axis-item">
+        <span class="axis-num">06</span>
+        <span class="axis-name">関係明確度 — 今の関係がどれだけ定義されているか</span>
+        <div class="axis-bar-wrap"><div class="axis-bar" data-w="40"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">Workshop Flow</p>
+    <div class="flow-list reveal">
+      <div class="flow-item">
+        <span class="flow-step">01</span>
+        <div>
+          <h4>チェックイン — 今の恋愛状況を6軸でスコアリング</h4>
+          <p>「今、気になっている人との状況」を6軸で数値化。自分の状態を可視化することから始める。</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-step">02</span>
+        <div>
+          <h4>仮説構築 — なぜそのスコアになっているのかを考える</h4>
+          <p>スコアの背景にある「構造」を言語化する。「自己開示が低いのはなぜか」を深掘りする。</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-step">03</span>
+        <div>
+          <h4>実験設計 — 今週やってみる小さな行動を決める</h4>
+          <p>大きな一手ではなく、低コストで試せる実験を設計。「今週1回LINEしてみる」レベルでいい。</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-step">04</span>
+        <div>
+          <h4>シェア＆フィードバック — 他者の視点をもらう</h4>
+          <p>参加者同士で仮説と実験を共有。自分では気づけない盲点を発見する。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-section reveal">
+    <p>次回開催情報はInstagramで告知します。<br>コラボ・登壇・取材のご相談もお気軽にどうぞ。</p>
+    <a class="cta-btn" href="https://www.instagram.com/sango35_art/" target="_blank">Instagram でフォローする</a>
+  </div>
+</div>
+
+<script>
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.axis-bar').forEach(bar => {
+        bar.style.width = bar.dataset.w + '%';
+      });
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>
