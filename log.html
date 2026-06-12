@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>log — 亀田山瑚</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f3f0;
+    --fg: #111;
+    --muted: #888;
+    --accent: #E8472A;
+    --accent-light: #fce0d8;
+    --line: #ddd;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Noto Sans JP', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* NETWORK CANVAS */
+  #network-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.18;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.1s;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+
+  .tagline {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 16px;
+    line-height: 1.8;
+    max-width: 480px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* NAV */
+  nav {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: rgba(245,243,240,0.95);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+
+  .nav-inner {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+
+  nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--accent); }
+  nav a.current { color: var(--accent); }
+
+  /* LOG LIST */
+  .log-section {
+    padding: 80px 0;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  /* ENTRY */
+  .log-entry {
+    border-top: 1px solid var(--line);
+    padding: 48px 0;
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 48px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .log-entry.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .entry-meta {
+    padding-top: 4px;
+  }
+
+  .entry-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .entry-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .entry-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    border: 1px solid var(--accent-light);
+    padding: 3px 8px;
+    text-transform: uppercase;
+  }
+
+  .entry-body {}
+
+  .entry-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 24px;
+    letter-spacing: 0.01em;
+  }
+
+  .entry-text {
+    font-size: 14px;
+    line-height: 2;
+    color: #333;
+  }
+
+  .entry-text p {
+    margin-bottom: 1.4em;
+  }
+
+  .entry-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .entry-text .separator {
+    text-align: center;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    margin: 2em 0;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 40px 0;
+  }
+
+  footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  footer a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: var(--accent); }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .container { padding: 0 24px; }
+    .log-entry {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="network-canvas"></canvas>
+
+<div class="container">
+
+  <header>
+    <p class="eyebrow">Sango Kameda — Thought Log</p>
+    <h1>log</h1>
+    <p class="tagline">日常の断片、問いの記録。<br>完成していない思考を、ここに置いていく。</p>
+  </header>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html">← home</a>
+      <a href="#" class="current">log</a>
+    </div>
+  </nav>
+
+  <section class="log-section">
+    <p class="section-label">entries</p>
+
+    <!-- ENTRY 02 -->
+    <article class="log-entry">
+      <div class="entry-meta">
+        <span class="entry-date">2025.06.03</span>
+        <div class="entry-tags">
+          <span class="entry-tag">AI</span>
+          <span class="entry-tag">記録</span>
+          <span class="entry-tag">仕事</span>
+        </div>
+      </div>
+      <div class="entry-body">
+        <h2 class="entry-title">齟齬レポートは、贋作なのか。</h2>
+        <div class="entry-text">
+          <p>2時間の動画の文字起こし修正に、2時間かかった。AIの精度は今、おそらく8〜9割。残りの1割を人間が埋めるために、今日も2時間が消えた。</p>
+
+          <p>効率が悪い。でも、その非効率の中に、私が気になるものが潜んでいた。</p>
+
+          <div class="separator">— —</div>
+
+          <p>イベントレポートは「その場を正確に伝えるもの」だと思われている。だとしたら、現地にいた人間がわざわざ書く意味はどこにあるのだろう。</p>
+
+          <p>AIが8〜9割を再現し、残りの1割に"ズレ"が生まれる。その場で実際に感じた空気、喋り手のニュアンス、笑いの間。それがレポートに落ちる時に、少しだけ変形する。</p>
+
+          <p>私はその変形を、欠陥だと思わなくなった。</p>
+
+          <p>現地にいた人間だけが持つ解釈が、その1割のズレに宿っている気がするから。</p>
+
+          <div class="separator">— —</div>
+
+          <p>2030年には、精度99%の文字起こしが数分で完成する時代になると思う。そうなったら、今日みたいな「ちょっとズレたレポート」は消えていく。</p>
+
+          <p>だとしたら、このたった数年間に生まれている"齟齬の記録"は、一種の時代的な作品なんじゃないか。</p>
+
+          <p>贋作でも、失敗作でもなく——AIと人間が共同制作した、過渡期の表現として。</p>
+
+          <p>そう思ったら、今日の2時間が少し、違って見えた。</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ENTRY 01 -->
+    <article class="log-entry">
+      <div class="entry-meta">
+        <span class="entry-date">2025.06.03</span>
+        <div class="entry-tags">
+          <span class="entry-tag">AI</span>
+          <span class="entry-tag">言語</span>
+          <span class="entry-tag">方言</span>
+        </div>
+      </div>
+      <div class="entry-body">
+        <h2 class="entry-title">AIが、方言を作った日。</h2>
+        <div class="entry-text">
+          <p>文字起こしの修正をしていたら、こんな変換が出てきた。</p>
+
+          <p>「まるまるじゃないですかっていうものが、まるまるじゃね？って書かれてた」</p>
+
+          <p>AIが、その人の発音の癖を拾って、勝手に方言に変換していた。</p>
+
+          <p>正しい文字起こしに直すべきか、一瞬手が止まった。</p>
+
+          <div class="separator">— —</div>
+
+          <p>「まるまるじゃね？」は間違いだ。でも、その人がその場で醸し出していた雰囲気には、むしろ近いかもしれない。</p>
+
+          <p>これまで私たちは「AIが人間の言語を学ぶ」という文脈で技術を語ってきた。でも今日感じたのは、逆の現象だった。AIが人間の言葉を解釈し、再構成することで、その人自身も気づいていなかった"方言性"が生まれている。</p>
+
+          <p>言語は記録されることで固定されてきたけど、AIを介することで、むしろ揺らぎや個性が付与される時代になっているのかもしれない。</p>
+
+          <div class="separator">— —</div>
+
+          <p>シンギュラリティ直前とか言われてるこの時代に、私は今日もただ文字起こしを修正している。でもその地味な作業の中に、「記録とは何か」という問いが潜んでいた。</p>
+
+          <p>正しく残すことが、本当にその人を残すことなのか。まだ答えは出ていない。</p>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <footer>
+    <p><a href="index.html">← sangokameda.com</a> &nbsp;/&nbsp; © 2026 Sango Kameda</p>
+  </footer>
+
+</div>
+
+<script>
+// Network canvas（メインサイトと同じ）
+const canvas = document.getElementById('network-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const nodes = [];
+const NODE_COUNT = 28;
+for (let i = 0; i < NODE_COUNT; i++) {
+  nodes.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    r: Math.random() * 3 + 1.5
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 160) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.strokeStyle = `rgba(232, 71, 42, ${(1 - dist / 160) * 0.4})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+    }
+  }
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232, 71, 42, 0.5)';
+    ctx.fill();
+  });
+  nodes.forEach(n => {
+    n.x += n.vx;
+    n.y += n.vy;
+    if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+    if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+// Scroll reveal
+const entries = document.querySelectorAll('.log-entry');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.05 });
+entries.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>
