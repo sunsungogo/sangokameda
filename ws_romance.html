@@ -25,10 +25,7 @@
   .container { max-width: 860px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 1; }
 
   /* BACK */
-  .back-bar {
-    padding: 16px 0;
-    border-bottom: 1px solid var(--line);
-  }
+  .back-bar { padding: 16px 0; border-bottom: 1px solid var(--line); }
   .back-link {
     font-family: var(--mono);
     font-size: 10px;
@@ -40,10 +37,7 @@
   .back-link:hover { color: var(--accent); }
 
   /* HERO */
-  .hero {
-    padding: 80px 0 60px;
-    border-bottom: 1px solid var(--line);
-  }
+  .hero { padding: 80px 0 60px; border-bottom: 1px solid var(--line); }
   .eyebrow {
     font-family: var(--mono);
     font-size: 10px;
@@ -107,6 +101,16 @@
   }
   .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
+  /* CITY SUB-LABEL */
+  .city-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
   /* CONCEPT */
   .concept-grid {
     display: grid;
@@ -114,12 +118,9 @@
     gap: 1px;
     background: var(--line);
     border: 1px solid var(--line);
-    margin-bottom: 40px;
+    margin-bottom: 48px;
   }
-  .concept-card {
-    background: var(--bg);
-    padding: 28px 24px;
-  }
+  .concept-card { background: var(--bg); padding: 28px 24px; }
   .concept-num {
     font-family: var(--mono);
     font-size: 28px;
@@ -131,51 +132,82 @@
   .concept-card h3 { font-family: var(--serif); font-size: 17px; margin-bottom: 10px; }
   .concept-card p { font-size: 12px; color: var(--muted); line-height: 1.8; }
 
-  /* AXIS */
-  .axis-list { display: grid; gap: 0; }
-  .axis-item {
-    display: grid;
-    grid-template-columns: 40px 1fr 80px;
-    gap: 20px;
-    align-items: center;
-    padding: 18px 0;
-    border-bottom: 1px solid var(--line);
+  /* HYPOTHESIS */
+  .hypo-box {
+    border: 1px solid var(--accent);
+    padding: 32px;
+    margin-bottom: 40px;
   }
-  .axis-num {
+  .hypo-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hypo-box p {
+    font-family: var(--serif);
+    font-size: clamp(15px, 2vw, 19px);
+    line-height: 2;
+    color: var(--fg);
+  }
+  .hypo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .hypo-card { background: var(--bg); padding: 28px 24px; }
+  .hypo-card .h-num {
     font-family: var(--mono);
     font-size: 11px;
     color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
   }
-  .axis-name { font-size: 14px; }
-  .axis-bar-wrap {
-    height: 3px;
-    background: var(--line);
-    position: relative;
-  }
-  .axis-bar {
-    height: 3px;
-    background: var(--accent);
-    transition: width 1s ease;
-    width: 0;
-  }
+  .hypo-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; line-height: 1.5; }
+  .hypo-card p { font-size: 12px; color: var(--muted); line-height: 1.8; }
 
-  /* FLOW */
+  /* PROGRESS */
+  .progress-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .progress-card { background: var(--bg); padding: 28px 24px; }
+  .progress-city {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .progress-card h3 { font-family: var(--serif); font-size: 20px; margin-bottom: 10px; }
+  .progress-card p { font-size: 12px; color: var(--muted); line-height: 1.8; }
+
+  /* FLOW (NAGOYA) */
   .flow-list { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
   .flow-item {
     background: var(--bg);
-    padding: 24px 28px;
+    padding: 20px 28px;
     display: grid;
-    grid-template-columns: 32px 1fr;
+    grid-template-columns: 52px 1fr;
     gap: 16px;
     align-items: start;
   }
-  .flow-step {
+  .flow-time {
     font-family: var(--mono);
     font-size: 11px;
     color: var(--accent);
     padding-top: 2px;
+    line-height: 1.6;
   }
-  .flow-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .flow-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
   .flow-item p { font-size: 12px; color: var(--muted); line-height: 1.8; }
 
   /* CTA */
@@ -205,8 +237,9 @@
   @media (max-width: 640px) {
     .container { padding: 0 24px; }
     .concept-grid { grid-template-columns: 1fr; }
-    .axis-item { grid-template-columns: 30px 1fr; }
-    .axis-bar-wrap { display: none; }
+    .hypo-grid { grid-template-columns: 1fr; }
+    .progress-grid { grid-template-columns: 1fr; }
+    .flow-item { grid-template-columns: 44px 1fr; }
   }
 </style>
 </head>
@@ -221,98 +254,137 @@
     <h1>恋愛を、実験する。</h1>
     <p class="hero-sub">Love Analysis Project</p>
     <p class="hero-desc">
-      「好きになる」「告白する」「距離が縮まる」——恋愛の各フェーズを仮説と実験で分解する。<br>
-      感覚や運に委ねるのではなく、自分なりのデータと設計で、恋愛を「学習できるもの」にする試み。
+      「好きになる」「距離が縮まる」「関係が変わる」——恋愛の各フェーズを仮説と実験で分解する。<br>
+      名古屋では「自分の恋愛を実験として見つめ直すWS」を、東京では「恋愛偏差値でマッチングを科学する研究」を並走させている。
     </p>
-    <span class="status-badge">Now Running</span>
+    <span class="status-badge">Now Running — 名古屋 &amp; 東京</span>
   </div>
 
+  <!-- CONCEPT -->
   <section>
     <p class="section-label">Concept</p>
+
+    <p class="city-sub reveal">Nagoya — 自分の恋愛を実験として見つめる</p>
     <div class="concept-grid reveal">
       <div class="concept-card">
         <p class="concept-num">01</p>
-        <h3>仮説を立てる</h3>
-        <p>「なぜ好きになるのか」「どんな瞬間に関係が変わるのか」を言語化し、自分なりの仮説をつくる。</p>
+        <h3>Before で仮説を立てる</h3>
+        <p>「自分がなぜ好きになるのか」をまず言語化。感覚を仮説に変えてから実験に臨む。</p>
       </div>
       <div class="concept-card">
         <p class="concept-num">02</p>
-        <h3>低コストで試す</h3>
-        <p>失敗しても大丈夫な小さな実験を設計する。完璧な告白より、小さな接触の積み重ねを検証する。</p>
+        <h3>After で変化を観る</h3>
+        <p>同じ相手・同じテーマで2回話す。Before/Afterの差が「実験結果」になる。</p>
       </div>
       <div class="concept-card">
         <p class="concept-num">03</p>
-        <h3>振り返って更新する</h3>
-        <p>うまくいかなかった理由を感情論ではなく構造で分析し、次の仮説に活かす。</p>
+        <h3>気づきをお守りに落とす</h3>
+        <p>今日の発見を「恋愛実験カード」に書き、白い巾着に入れて持ち帰る。3ヶ月後に開ける。</p>
+      </div>
+    </div>
+
+    <p class="city-sub reveal">Tokyo — 恋愛偏差値でマッチングを科学する</p>
+    <div class="concept-grid reveal" style="margin-bottom: 0;">
+      <div class="concept-card">
+        <p class="concept-num">01</p>
+        <h3>恋愛偏差値を作る</h3>
+        <p>内部要因（愛着・価値観・自己開示）と外部要因（見た目・状況・出会い方）を定量化し、スコアを算出する。</p>
+      </div>
+      <div class="concept-card">
+        <p class="concept-num">02</p>
+        <h3>スコアで合コンをデザインする</h3>
+        <p>スコアの近い人同士をマッチングし、「会話の弾みやすさ」と相関するか合コンで検証する。</p>
+      </div>
+      <div class="concept-card">
+        <p class="concept-num">03</p>
+        <h3>恋愛分析を文化にする</h3>
+        <p>「恋愛分析を自己分析と同じくらい当たり前にする」。診断を出口ではなく、入口として設計する。</p>
       </div>
     </div>
   </section>
 
+  <!-- HYPOTHESIS (TOKYO) -->
   <section>
-    <p class="section-label">6 Axis — 恋愛を測る6つの軸</p>
-    <div class="axis-list reveal">
-      <div class="axis-item">
-        <span class="axis-num">01</span>
-        <span class="axis-name">自己開示度 — どれだけ自分を見せているか</span>
-        <div class="axis-bar-wrap"><div class="axis-bar" data-w="85"></div></div>
+    <p class="section-label">Hypothesis — 東京・検証する3つの仮説</p>
+
+    <div class="hypo-box reveal">
+      <p class="hypo-label">Central Hypothesis</p>
+      <p>恋愛観を言語化・実験した経験を持つ人は、<br>そうでない人より恋愛の上振れを引き起こしやすい。<br>その差は、トレーニングによって縮まる。</p>
+    </div>
+
+    <div class="hypo-grid reveal">
+      <div class="hypo-card">
+        <p class="h-num">仮説 01</p>
+        <h4>恋愛偏差値が高い人は、望む恋愛への行動が起きやすい</h4>
+        <p>アンケートで算出した偏差値と、セッション後の行動変容（宣言の実行率・関係への踏み出し方）を追跡・照合する。</p>
       </div>
-      <div class="axis-item">
-        <span class="axis-num">02</span>
-        <span class="axis-name">相手理解度 — 相手のことをどれだけ知っているか</span>
-        <div class="axis-bar-wrap"><div class="axis-bar" data-w="70"></div></div>
+      <div class="hypo-card">
+        <p class="h-num">仮説 02</p>
+        <h4>スコアの近い人同士は、合コンで会話が弾みやすい</h4>
+        <p>合コン参加者をスコアでグルーピングし、会話量・満足度とスコア差の相関を測定する。</p>
       </div>
-      <div class="axis-item">
-        <span class="axis-num">03</span>
-        <span class="axis-name">接触頻度 — どれくらいの頻度で関わっているか</span>
-        <div class="axis-bar-wrap"><div class="axis-bar" data-w="60"></div></div>
-      </div>
-      <div class="axis-item">
-        <span class="axis-num">04</span>
-        <span class="axis-name">感情の強度 — 今どれくらい気になっているか</span>
-        <div class="axis-bar-wrap"><div class="axis-bar" data-w="90"></div></div>
-      </div>
-      <div class="axis-item">
-        <span class="axis-num">05</span>
-        <span class="axis-name">行動変容度 — 相手のために行動が変わっているか</span>
-        <div class="axis-bar-wrap"><div class="axis-bar" data-w="50"></div></div>
-      </div>
-      <div class="axis-item">
-        <span class="axis-num">06</span>
-        <span class="axis-name">関係明確度 — 今の関係がどれだけ定義されているか</span>
-        <div class="axis-bar-wrap"><div class="axis-bar" data-w="40"></div></div>
+      <div class="hypo-card">
+        <p class="h-num">仮説 03</p>
+        <h4>スコアはマッチング精度を上げられる</h4>
+        <p>合コン参加者のマッチング成立率とスコア差の相関を3ヶ月分のデータで検証する。</p>
       </div>
     </div>
   </section>
 
+  <!-- PROGRESS -->
   <section>
-    <p class="section-label">Workshop Flow</p>
+    <p class="section-label">Progress</p>
+    <div class="progress-grid reveal">
+      <div class="progress-card">
+        <p class="progress-city">Tokyo</p>
+        <h3>100Banch 提出予定</h3>
+        <p>100BANCH Garage Programへエントリー申請中。2026年8〜10月、100BANCHを拠点に恋愛分析データの収集と合コン検証を実施予定。</p>
+      </div>
+      <div class="progress-card">
+        <p class="progress-city">Nagoya</p>
+        <h3>7月5日 イベント開催！</h3>
+        <p>CODE BASE NAGOYAにて恋愛実験ワークショップを開催。2026年7月5日（日）120分。実験①Before → AI診断 → 実験②After → お守り制作。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKSHOP FLOW (NAGOYA) -->
+  <section>
+    <p class="section-label">Workshop Flow — 名古屋版 120分</p>
     <div class="flow-list reveal">
       <div class="flow-item">
-        <span class="flow-step">01</span>
+        <span class="flow-time">01</span>
         <div>
-          <h4>チェックイン — 今の恋愛状況を6軸でスコアリング</h4>
-          <p>「今、気になっている人との状況」を6軸で数値化。自分の状態を可視化することから始める。</p>
+          <h4>実験① Before</h4>
+          <p>ペアを固定し、恋愛のきっかけについてトーク。AI診断前の「素の状態」を記録する。</p>
         </div>
       </div>
       <div class="flow-item">
-        <span class="flow-step">02</span>
+        <span class="flow-time">02</span>
         <div>
-          <h4>仮説構築 — なぜそのスコアになっているのかを考える</h4>
-          <p>スコアの背景にある「構造」を言語化する。「自己開示が低いのはなぜか」を深掘りする。</p>
+          <h4>AI診断</h4>
+          <p>13問スライダー診断を受け、AIが恋愛タイプ・仮説の方向性・盲点を提示する。</p>
         </div>
       </div>
       <div class="flow-item">
-        <span class="flow-step">03</span>
+        <span class="flow-time">03</span>
         <div>
-          <h4>実験設計 — 今週やってみる小さな行動を決める</h4>
-          <p>大きな一手ではなく、低コストで試せる実験を設計。「今週1回LINEしてみる」レベルでいい。</p>
+          <h4>実験② After</h4>
+          <p>同じ相手・同じテーマで、AI診断結果の仮説を意識しながら再トーク。Before/Afterの差が実験結果になる。</p>
         </div>
       </div>
       <div class="flow-item">
-        <span class="flow-step">04</span>
+        <span class="flow-time">04</span>
         <div>
-          <h4>シェア＆フィードバック — 他者の視点をもらう</h4>
-          <p>参加者同士で仮説と実験を共有。自分では気づけない盲点を発見する。</p>
+          <h4>SHARE</h4>
+          <p>3人グループで気づきをシェア。自分では見えない盲点を他者の視点で発見する。</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-time">05</span>
+        <div>
+          <h4>お守り制作</h4>
+          <p>恋愛実験カードに「なりたい姿・行動宣言」を記入し、白い巾着袋に入れて持ち帰る。開封は3ヶ月後。</p>
         </div>
       </div>
     </div>
@@ -328,12 +400,7 @@
 const reveals = document.querySelectorAll('.reveal');
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      e.target.querySelectorAll('.axis-bar').forEach(bar => {
-        bar.style.width = bar.dataset.w + '%';
-      });
-    }
+    if (e.isIntersecting) e.target.classList.add('visible');
   });
 }, { threshold: 0.1 });
 reveals.forEach(r => observer.observe(r));
