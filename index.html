@@ -463,6 +463,60 @@
     .achievement-item { grid-template-columns: 80px 1fr; }
     .achievement-tag { display: none; }
   }
+/* NEWS */
+  .news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--line);
+  }
+  .news-item {
+    display: grid;
+    grid-template-columns: 100px 80px 1fr auto;
+    gap: 16px;
+    align-items: baseline;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--line);
+    transition: background 0.2s, padding-left 0.2s;
+  }
+  .news-item:last-child { border-bottom: none; }
+  .news-item:hover { background: #fff; padding-left: 32px; }
+  .news-date {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .news-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .news-text {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--fg);
+  }
+  .news-link {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .news-link:hover { opacity: 0.6; }
+  @media (max-width: 640px) {
+    .news-item { grid-template-columns: 1fr auto; grid-template-rows: auto auto; gap: 4px 16px; }
+    .news-date { grid-column: 1; }
+    .news-tag { display: none; }
+    .news-text { grid-column: 1 / -1; }
+    .news-link { grid-row: 1; grid-column: 2; }
+  }
 </style>
 <script type="application/ld+json">
 [
@@ -534,6 +588,7 @@
 
   <nav>
     <div class="nav-inner">
+      <a href="#news">ニュース</a>
       <a href="#mission">やりたいこと</a>
       <a href="#projects">つくったもの</a>
       <a href="#achievements">実績</a>
@@ -541,8 +596,32 @@
       <a href="log.html">つぶやき</a>
     </div>
   </nav>
+<!-- NEWS -->
+  <!-- 新しいニュースを news-list の一番上に追加してください（新しい順） -->
+  <section id="news">
+    <p class="section-label reveal">News</p>
+    <div class="news-list">
 
+      <!-- ===== 2026.07.12 ===== -->
+      <div class="news-item reveal">
+        <span class="news-date">2026.07.12</span>
+        <span class="news-tag">Report</span>
+        <p class="news-text">恋愛実験ワークショップ 第1回（CODE BASE NAGOYA）の開催記録を公開しました。</p>
+        <a class="news-link" href="events.html">→</a>
+      </div>
+
+      <!-- ↓ 次のニュースはここに追加（上にコピー）
+      <div class="news-item reveal">
+        <span class="news-date">YYYY.MM.DD</span>
+        <span class="news-tag">Report / Event / Media / Update</span>
+        <p class="news-text">テキスト</p>
+        <a class="news-link" href="URL">→</a>
+      </div>
+      -->
+
+    </div>
   <!-- MISSION -->
+    </section>
   <section id="mission">
     <p class="section-label">やりたいこと</p>
     <div class="reveal">
