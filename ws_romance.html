@@ -1,412 +1,378 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<link rel="canonical" href="https://sangokameda.com/ws_romance.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>恋愛を、実験する。/ Love Analysis Project</title>
+<title>恋愛を、実験する。— Workshop</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f5f3f0;
+    --bg: #fff;
     --fg: #111;
-    --muted: #888;
+    --muted: #999;
     --accent: #E8472A;
     --accent-light: #fce0d8;
-    --line: #ddd;
+    --line: #e0e0e0;
+    --grid: #f0f0f0;
     --mono: 'DM Mono', monospace;
     --serif: 'Shippori Mincho', serif;
     --sans: 'Noto Sans JP', sans-serif;
   }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-weight: 300; overflow-x: hidden; }
 
-  .container { max-width: 860px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 1; }
+  /* 方眼背景 */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* 赤い糸SVGキャンバス */
+  #thread-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 40px;
+    position: relative;
+    z-index: 2;
+  }
 
   /* BACK */
   .back-bar { padding: 16px 0; border-bottom: 1px solid var(--line); }
-  .back-link {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
+  .back-link { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--muted); text-decoration: none; transition: color 0.2s; }
   .back-link:hover { color: var(--accent); }
 
   /* HERO */
   .hero { padding: 80px 0 60px; border-bottom: 1px solid var(--line); }
-  .eyebrow {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    opacity: 0;
-    animation: fadeUp 0.7s ease forwards 0.1s;
-  }
-  h1 {
-    font-family: var(--serif);
-    font-size: clamp(32px, 6vw, 58px);
-    font-weight: 700;
-    line-height: 1.2;
-    margin-bottom: 8px;
-    opacity: 0;
-    animation: fadeUp 0.7s ease forwards 0.2s;
-  }
-  .hero-sub {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    margin-bottom: 32px;
-    opacity: 0;
-    animation: fadeUp 0.7s ease forwards 0.3s;
-  }
-  .hero-desc {
-    font-size: 15px;
-    line-height: 2;
-    max-width: 600px;
-    opacity: 0;
-    animation: fadeUp 0.7s ease forwards 0.4s;
-  }
-  .status-badge {
-    display: inline-block;
-    margin-top: 24px;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    padding: 6px 14px;
-    background: var(--accent);
-    color: #fff;
-    opacity: 0;
-    animation: fadeUp 0.7s ease forwards 0.5s;
-  }
+  .eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; color: var(--accent); text-transform: uppercase; margin-bottom: 20px; opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s; }
+  h1 { font-family: var(--serif); font-size: clamp(36px, 6vw, 64px); font-weight: 700; line-height: 1.2; margin-bottom: 24px; opacity: 0; animation: fadeUp 0.7s ease forwards 0.2s; }
+  .hero-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.7s ease forwards 0.3s; }
+  .hero-badge { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; padding: 5px 12px; border: 1px solid var(--accent); color: var(--accent); }
+  .hero-badge.filled { background: var(--accent); color: #fff; }
+  .hero-desc { font-size: 15px; line-height: 2.1; max-width: 560px; color: #555; opacity: 0; animation: fadeUp 0.7s ease forwards 0.4s; }
 
   /* SECTIONS */
-  section { padding: 64px 0; border-bottom: 1px solid var(--line); }
-  .section-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 36px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
+  section { padding: 72px 0; border-bottom: 1px solid var(--line); }
+  .section-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; color: var(--accent); text-transform: uppercase; margin-bottom: 40px; display: flex; align-items: center; gap: 16px; }
   .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
-  /* CITY SUB-LABEL */
-  .city-sub {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-
-  /* CONCEPT */
-  .concept-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1px;
+  /* FLOW — タイムライン */
+  .flow-timeline { position: relative; padding-left: 32px; }
+  .flow-timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 8px; bottom: 8px;
+    width: 2px;
     background: var(--line);
-    border: 1px solid var(--line);
-    margin-bottom: 48px;
   }
-  .concept-card { background: var(--bg); padding: 28px 24px; }
-  .concept-num {
-    font-family: var(--mono);
-    font-size: 28px;
-    font-weight: 300;
-    color: var(--accent);
-    opacity: 0.4;
-    margin-bottom: 12px;
-  }
-  .concept-card h3 { font-family: var(--serif); font-size: 17px; margin-bottom: 10px; }
-  .concept-card p { font-size: 12px; color: var(--muted); line-height: 1.8; }
 
-  /* HYPOTHESIS */
-  .hypo-box {
-    border: 1px solid var(--accent);
-    padding: 32px;
-    margin-bottom: 40px;
-  }
-  .hypo-label {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.3em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .hypo-box p {
-    font-family: var(--serif);
-    font-size: clamp(15px, 2vw, 19px);
-    line-height: 2;
-    color: var(--fg);
-  }
-  .hypo-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-  }
-  .hypo-card { background: var(--bg); padding: 28px 24px; }
-  .hypo-card .h-num {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    margin-bottom: 12px;
-    letter-spacing: 0.1em;
-  }
-  .hypo-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; line-height: 1.5; }
-  .hypo-card p { font-size: 12px; color: var(--muted); line-height: 1.8; }
-
-  /* PROGRESS */
-  .progress-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-  }
-  .progress-card { background: var(--bg); padding: 28px 24px; }
-  .progress-city {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--accent);
-    margin-bottom: 12px;
-    text-transform: uppercase;
-  }
-  .progress-card h3 { font-family: var(--serif); font-size: 20px; margin-bottom: 10px; }
-  .progress-card p { font-size: 12px; color: var(--muted); line-height: 1.8; }
-
-  /* FLOW (NAGOYA) */
-  .flow-list { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
   .flow-item {
+    position: relative;
+    padding: 0 0 48px 32px;
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .flow-item.visible { opacity: 1; transform: translateX(0); }
+  .flow-item:last-child { padding-bottom: 0; }
+
+  .flow-dot {
+    position: absolute;
+    left: -32px; top: 4px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
     background: var(--bg);
-    padding: 20px 28px;
-    display: grid;
-    grid-template-columns: 52px 1fr;
-    gap: 16px;
-    align-items: start;
+    border: 2px solid var(--line);
+    transition: border-color 0.4s, background 0.4s;
   }
-  .flow-time {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    padding-top: 2px;
-    line-height: 1.6;
-  }
-  .flow-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
-  .flow-item p { font-size: 12px; color: var(--muted); line-height: 1.8; }
+  .flow-item.visible .flow-dot { border-color: var(--accent); background: var(--accent); }
+
+  .flow-time { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; color: var(--muted); margin-bottom: 8px; }
+  .flow-item h3 { font-family: var(--serif); font-size: 20px; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
+  .flow-item p { font-size: 13px; color: #666; line-height: 1.9; }
+  .flow-quote { margin-top: 12px; padding: 12px 16px; border-left: 2px solid var(--accent); font-family: var(--serif); font-size: 14px; color: #444; line-height: 1.8; background: #fafafa; }
+
+  /* CONCEPT GRID */
+  .concept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .concept-card { background: var(--bg); padding: 28px 24px; }
+  .concept-card .c-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 10px; }
+  .concept-card p { font-size: 13px; color: #555; line-height: 1.9; }
 
   /* CTA */
-  .cta-section { padding: 64px 0; text-align: center; }
-  .cta-section p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.8; }
-  .cta-btn {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    padding: 14px 32px;
-    background: var(--accent);
-    color: #fff;
-    text-decoration: none;
-    transition: background 0.2s;
-  }
+  .cta-wrap { text-align: center; padding: 64px 0; }
+  .cta-wrap p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.8; }
+  .cta-btn { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; padding: 14px 36px; background: var(--accent); color: #fff; text-decoration: none; transition: background 0.2s; margin: 6px; }
   .cta-btn:hover { background: #c23518; }
+  .cta-btn.outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+  .cta-btn.outline:hover { background: var(--accent); color: #fff; }
 
-  /* REVEAL */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  footer { padding: 40px 0; text-align: center; border-top: 1px solid var(--line); }
+  footer p { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.2em; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
   .reveal.visible { opacity: 1; transform: translateY(0); }
 
   @media (max-width: 640px) {
     .container { padding: 0 24px; }
     .concept-grid { grid-template-columns: 1fr; }
-    .hypo-grid { grid-template-columns: 1fr; }
-    .progress-grid { grid-template-columns: 1fr; }
-    .flow-item { grid-template-columns: 44px 1fr; }
+    body::before { background-size: 24px 24px; }
   }
 </style>
 </head>
 <body>
+
+<canvas id="thread-canvas"></canvas>
+
 <div class="container">
   <div class="back-bar">
-    <a class="back-link" href="index.html">← 亀田山瑚 Portfolio</a>
+    <a class="back-link" href="index.html">← 亀田山瑚</a>
   </div>
 
   <div class="hero">
-    <p class="eyebrow">Workshop / Research Project — 2025–</p>
-    <h1>恋愛を、実験する。</h1>
-    <p class="hero-sub">Love Analysis Project</p>
-    <p class="hero-desc">
-      「好きになる」「距離が縮まる」「関係が変わる」——恋愛の各フェーズを仮説と実験で分解する。<br>
-      名古屋では「自分の恋愛を実験として見つめ直すWS」を、東京では「恋愛偏差値でマッチングを科学する研究」を並走させている。
-    </p>
-    <span class="status-badge">Now Running — 名古屋 &amp; 東京</span>
+    <p class="eyebrow">Workshop — 恋愛実験</p>
+    <h1>恋愛を、<br>実験する。</h1>
+    <div class="hero-meta">
+      <span class="hero-badge filled">絶賛開催中！</span>
+      <span class="hero-badge">120分</span>
+      <span class="hero-badge">約20名</span>
+    </div>
+    <p class="hero-desc">仮説を立てて、試して、何かを持って帰る。<br>感覚や運に委ねるのではなく、今日この場で「実験」する。<br>正解はない。でも、気づきはある。</p>
   </div>
 
-  <!-- CONCEPT -->
   <section>
-    <p class="section-label">Concept</p>
-
-    <p class="city-sub reveal">Nagoya — 自分の恋愛を実験として見つめる</p>
+    <p class="section-label">このWSでやること</p>
     <div class="concept-grid reveal">
       <div class="concept-card">
-        <p class="concept-num">01</p>
-        <h3>Before で仮説を立てる</h3>
-        <p>「自分がなぜ好きになるのか」をまず言語化。感覚を仮説に変えてから実験に臨む。</p>
+        <p class="c-label">Before</p>
+        <p>素の自分で話す。意図なし・仮説なしで自由対話。自分の恋愛観の「現在地」を確認する。</p>
       </div>
       <div class="concept-card">
-        <p class="concept-num">02</p>
-        <h3>After で変化を観る</h3>
-        <p>同じ相手・同じテーマで2回話す。Before/Afterの差が「実験結果」になる。</p>
+        <p class="c-label">AI診断</p>
+        <p>13問に答えると、あなたの恋愛タイプとセルフブランディング提案が出る。仮説を獲得する。</p>
       </div>
       <div class="concept-card">
-        <p class="concept-num">03</p>
-        <h3>気づきをお守りに落とす</h3>
-        <p>今日の発見を「恋愛実験カード」に書き、白い巾着に入れて持ち帰る。3ヶ月後に開ける。</p>
-      </div>
-    </div>
-
-    <p class="city-sub reveal">Tokyo — 恋愛偏差値でマッチングを科学する</p>
-    <div class="concept-grid reveal" style="margin-bottom: 0;">
-      <div class="concept-card">
-        <p class="concept-num">01</p>
-        <h3>恋愛偏差値を作る</h3>
-        <p>内部要因（愛着・価値観・自己開示）と外部要因（見た目・状況・出会い方）を定量化し、スコアを算出する。</p>
+        <p class="c-label">意図設定</p>
+        <p>「Afterでこう接してみる」を1つ決める。小さくていい。書いてお守りに封入する。</p>
       </div>
       <div class="concept-card">
-        <p class="concept-num">02</p>
-        <h3>スコアで合コンをデザインする</h3>
-        <p>スコアの近い人同士をマッチングし、「会話の弾みやすさ」と相関するか合コンで検証する。</p>
-      </div>
-      <div class="concept-card">
-        <p class="concept-num">03</p>
-        <h3>恋愛分析を文化にする</h3>
-        <p>「恋愛分析を自己分析と同じくらい当たり前にする」。診断を出口ではなく、入口として設計する。</p>
+        <p class="c-label">After + お守り</p>
+        <p>意図を持って同じペアで話す。差分を言語化し、仮説をお守りに込めて持ち帰る。</p>
       </div>
     </div>
   </section>
 
-  <!-- HYPOTHESIS (TOKYO) -->
   <section>
-    <p class="section-label">Hypothesis — 東京・検証する3つの仮説</p>
+    <p class="section-label">当日の流れ — 120分</p>
+    <div class="flow-timeline">
 
-    <div class="hypo-box reveal">
-      <p class="hypo-label">Central Hypothesis</p>
-      <p>恋愛観を言語化・実験した経験を持つ人は、<br>そうでない人より恋愛の上振れを引き起こしやすい。<br>その差は、トレーニングによって縮まる。</p>
-    </div>
+      <div class="flow-item" data-anchor="flow-0">
+        <div class="flow-dot"></div>
+        <p class="flow-time">0:00 — 10分</p>
+        <h3>オープニング</h3>
+        <p>グラウンドルール説明。正解はない・パスOK・この場限り。WSの全体像を共有する。</p>
+        <div class="flow-quote">「今日は恋愛を実験するWSです。仮説を立てて、試して、何かを持って帰る。それだけです。」</div>
+      </div>
 
-    <div class="hypo-grid reveal">
-      <div class="hypo-card">
-        <p class="h-num">仮説 01</p>
-        <h4>恋愛偏差値が高い人は、望む恋愛への行動が起きやすい</h4>
-        <p>アンケートで算出した偏差値と、セッション後の行動変容（宣言の実行率・関係への踏み出し方）を追跡・照合する。</p>
+      <div class="flow-item" data-anchor="flow-1">
+        <div class="flow-dot"></div>
+        <p class="flow-time">0:10 — 10分</p>
+        <h3>アイスブレイク</h3>
+        <p>ペア発表 → 席移動 → 初対面で1問答える。</p>
+        <div class="flow-quote">お題：「なんで恋愛したい（したくない）のか？」</div>
       </div>
-      <div class="hypo-card">
-        <p class="h-num">仮説 02</p>
-        <h4>スコアの近い人同士は、合コンで会話が弾みやすい</h4>
-        <p>合コン参加者をスコアでグルーピングし、会話量・満足度とスコア差の相関を測定する。</p>
+
+      <div class="flow-item" data-anchor="flow-2">
+        <div class="flow-dot"></div>
+        <p class="flow-time">0:20 — 20分</p>
+        <h3>① Before — 素の自分で対話</h3>
+        <p>意図なし・仮説なしで自由対話。ワークシートBefore欄にメモ。</p>
+        <div class="flow-quote">お題：「恋愛のきっかけ」</div>
       </div>
-      <div class="hypo-card">
-        <p class="h-num">仮説 03</p>
-        <h4>スコアはマッチング精度を上げられる</h4>
-        <p>合コン参加者のマッチング成立率とスコア差の相関を3ヶ月分のデータで検証する。</p>
+
+      <div class="flow-item" data-anchor="flow-3">
+        <div class="flow-dot"></div>
+        <p class="flow-time">0:40 — 15分</p>
+        <h3>AI診断 — 仮説の獲得</h3>
+        <p>QRコード一斉表示 → 各自スマホで診断。タイプ名・セルフブランディング提案をワークシートにメモ。</p>
       </div>
+
+      <div class="flow-item" data-anchor="flow-4">
+        <div class="flow-dot"></div>
+        <p class="flow-time">0:55 — 5分</p>
+        <h3>意図設定</h3>
+        <p>「Afterでこう接してみる」を1つ決めて記入。ワークシート下半分を切り取りお守りへ封入。</p>
+      </div>
+
+      <div class="flow-item" data-anchor="flow-5">
+        <div class="flow-dot"></div>
+        <p class="flow-time">1:00 — 20分</p>
+        <h3>② After — 意識的な試行</h3>
+        <p>意図を持って同じペアで対話。気づいたことは適宜メモ。</p>
+        <div class="flow-quote">お題：「恋愛で一番怖いと思うことは何か？」</div>
+      </div>
+
+      <div class="flow-item" data-anchor="flow-6">
+        <div class="flow-dot"></div>
+        <p class="flow-time">1:20 — 15分</p>
+        <h3>考察 — 差分を言語化</h3>
+        <p>ペアで「Before→Afterで何が変わったか」を話す。ワークシート考察欄記入。</p>
+      </div>
+
+      <div class="flow-item" data-anchor="flow-7">
+        <div class="flow-dot"></div>
+        <p class="flow-time">1:35 — 20分</p>
+        <h3>お守り制作</h3>
+        <p>差し込みカード記入（仮説タイトル・試すこと・成功の定義）→ 封入。完成後にペアでお守りを交換する。</p>
+      </div>
+
+      <div class="flow-item" data-anchor="flow-8">
+        <div class="flow-dot"></div>
+        <p class="flow-time">1:55 — 5分</p>
+        <h3>クロージング</h3>
+        <p>ひとことシェア（1人10秒）。開封日案内。写真・解散。</p>
+        <div class="flow-quote">「今日試したことは仮説です。正解かどうかは3ヶ月後にわかります。」</div>
+      </div>
+
     </div>
   </section>
 
-  <!-- PROGRESS -->
-  <section>
-    <p class="section-label">Progress</p>
-    <div class="progress-grid reveal">
-      <div class="progress-card">
-        <p class="progress-city">Tokyo</p>
-        <h3>100Banch 提出予定</h3>
-        <p>100BANCH Garage Programへエントリー申請中。2026年8〜10月、100BANCHを拠点に恋愛分析データの収集と合コン検証を実施予定。</p>
-      </div>
-      <div class="progress-card">
-        <p class="progress-city">Nagoya</p>
-        <h3>7月5日 イベント開催！</h3>
-        <p>CODE BASE NAGOYAにて恋愛実験ワークショップを開催。2026年7月5日（日）120分。実験①Before → AI診断 → 実験②After → お守り制作。</p>
-      </div>
-    </div>
-  </section>
-<div style="margin-top: 28px; text-align: right;">
-    <a href="events.html" style="display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;padding:10px 22px;border:1px solid #E8472A;color:#E8472A;text-decoration:none;" onmouseover="this.style.background='#E8472A';this.style.color='#fff';" onmouseout="this.style.background='';this.style.color='#E8472A';">開催記録を見る →</a>
+  <div class="cta-wrap reveal">
+    <p>次回開催はInstagramで告知します。<br>コラボ・登壇・出張開催のご相談もお気軽にどうぞ。</p>
+    <a class="cta-btn" href="https://www.instagram.com/sango35_art/" target="_blank">Instagram でフォローする</a>
+    <a class="cta-btn outline" href="love_analysis.html">Love Analysis Project →</a>
   </div>
-  <!-- WORKSHOP FLOW (NAGOYA) -->
-  <section>
-    <p class="section-label">Workshop Flow — 名古屋版 120分</p>
-    <div class="flow-list reveal">
-      <div class="flow-item">
-        <span class="flow-time">01</span>
-        <div>
-          <h4>実験① Before</h4>
-          <p>ペアを固定し、恋愛のきっかけについてトーク。AI診断前の「素の状態」を記録する。</p>
-        </div>
-      </div>
-      <div class="flow-item">
-        <span class="flow-time">02</span>
-        <div>
-          <h4>AI診断</h4>
-          <p>13問スライダー診断を受け、AIが恋愛タイプ・仮説の方向性・盲点を提示する。</p>
-        </div>
-      </div>
-      <div class="flow-item">
-        <span class="flow-time">03</span>
-        <div>
-          <h4>実験② After</h4>
-          <p>同じ相手・同じテーマで、AI診断結果の仮説を意識しながら再トーク。Before/Afterの差が実験結果になる。</p>
-        </div>
-      </div>
-      <div class="flow-item">
-        <span class="flow-time">04</span>
-        <div>
-          <h4>SHARE</h4>
-          <p>3人グループで気づきをシェア。自分では見えない盲点を他者の視点で発見する。</p>
-        </div>
-      </div>
-      <div class="flow-item">
-        <span class="flow-time">05</span>
-        <div>
-          <h4>お守り制作</h4>
-          <p>恋愛実験カードに「なりたい姿・行動宣言」を記入し、白い巾着袋に入れて持ち帰る。開封は3ヶ月後。</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <div class="cta-section reveal">
-    <p>次回開催情報はInstagramで告知します。<br>コラボ・登壇・取材のご相談もお気軽にどうぞ。</p>
-    <a class="cta-btn" href="https://www.instagram.com/sango35_art/" target="_blank" rel="noopener noreferrer">Instagram でフォローする</a>
-  </div>
+  <footer>
+    <p>← <a href="index.html" style="color:var(--muted); text-decoration:none;">亀田山瑚 Portfolio</a></p>
+  </footer>
 </div>
 
 <script>
+// 赤い糸アニメーション
+const canvas = document.getElementById('thread-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// スクロール進捗に応じて糸が伸びるアニメーション
+let scrollProgress = 0;
+const threadPoints = [];
+const NUM_POINTS = 12;
+
+// 糸の通過点を生成（ページの縦方向に沿って）
+function generatePoints() {
+  threadPoints.length = 0;
+  const w = canvas.width;
+  for (let i = 0; i < NUM_POINTS; i++) {
+    const t = i / (NUM_POINTS - 1);
+    threadPoints.push({
+      x: w * 0.15 + Math.sin(t * Math.PI * 3) * w * 0.08 + (Math.random() - 0.5) * w * 0.04,
+      y: t
+    });
+  }
+}
+generatePoints();
+window.addEventListener('resize', generatePoints);
+
+window.addEventListener('scroll', () => {
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+});
+
+function drawThread() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (threadPoints.length < 2) { requestAnimationFrame(drawThread); return; }
+
+  const pageH = document.body.scrollHeight;
+  const viewTop = window.scrollY;
+
+  // スクロール進捗に応じて描画する糸の長さを決める
+  const drawUpTo = scrollProgress;
+
+  ctx.save();
+  ctx.strokeStyle = 'rgba(232, 71, 42, 0.55)';
+  ctx.lineWidth = 1.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.setLineDash([6, 4]);
+
+  ctx.beginPath();
+  let started = false;
+
+  for (let i = 0; i < threadPoints.length - 1; i++) {
+    const p0 = threadPoints[i];
+    const p1 = threadPoints[i + 1];
+
+    if (p0.y > drawUpTo + 0.15) break;
+
+    const segProgress = Math.min(1, Math.max(0, (drawUpTo - p0.y) / (p1.y - p0.y + 0.001)));
+
+    const x0 = p0.x;
+    const y0 = p0.y * pageH - viewTop;
+    const x1 = p0.x + (p1.x - p0.x) * segProgress;
+    const y1 = (p0.y + (p1.y - p0.y) * segProgress) * pageH - viewTop;
+
+    if (!started) { ctx.moveTo(x0, y0); started = true; }
+    ctx.lineTo(x1, y1);
+  }
+
+  ctx.stroke();
+  ctx.restore();
+
+  // 糸の先端に小さな円
+  if (started && drawUpTo > 0.02) {
+    const lastIdx = Math.min(
+      threadPoints.length - 2,
+      Math.floor(drawUpTo * (threadPoints.length - 1))
+    );
+    const p = threadPoints[lastIdx];
+    const screenY = p.y * pageH - viewTop;
+    ctx.beginPath();
+    ctx.arc(p.x, screenY, 4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232, 71, 42, 0.8)';
+    ctx.fill();
+  }
+
+  requestAnimationFrame(drawThread);
+}
+drawThread();
+
+// フロータイムラインのスクロールリビール
+const flowItems = document.querySelectorAll('.flow-item');
 const reveals = document.querySelectorAll('.reveal');
+const allObserved = [...flowItems, ...reveals];
+
 const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) e.target.classList.add('visible');
-  });
-}, { threshold: 0.1 });
-reveals.forEach(r => observer.observe(r));
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+
+allObserved.forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
