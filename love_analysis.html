@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Analysis Project — 恋愛を、データにする。</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fff;
+    --fg: #111;
+    --muted: #999;
+    --accent: #E8472A;
+    --accent-light: #fce0d8;
+    --line: #e0e0e0;
+    --grid: #f0f0f0;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Noto Sans JP', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-weight: 300; overflow-x: hidden; }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  #thread-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 2; }
+
+  .back-bar { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .back-link { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .back-link:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero { padding: 80px 0 60px; border-bottom: 1px solid var(--line); }
+  .eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; color: var(--accent); text-transform: uppercase; margin-bottom: 20px; opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s; }
+  h1 { font-family: var(--serif); font-size: clamp(32px, 5vw, 56px); font-weight: 700; line-height: 1.25; margin-bottom: 24px; opacity: 0; animation: fadeUp 0.7s ease forwards 0.2s; }
+  .hero-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.7s ease forwards 0.3s; }
+  .hero-badge { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; padding: 5px 12px; border: 1px solid var(--accent); color: var(--accent); }
+  .hero-badge.filled { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .hero-badge a { color: inherit; text-decoration: none; }
+  .hero-desc { font-size: 15px; line-height: 2.1; max-width: 560px; color: #555; opacity: 0; animation: fadeUp 0.7s ease forwards 0.4s; }
+
+  /* SECTIONS */
+  section { padding: 72px 0; border-bottom: 1px solid var(--line); }
+  .section-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; color: var(--accent); text-transform: uppercase; margin-bottom: 40px; display: flex; align-items: center; gap: 16px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+  /* 診断ツールCTA */
+  .test-cta {
+    border: 2px solid var(--accent);
+    padding: 48px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .test-cta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--accent-light);
+    opacity: 0.15;
+  }
+  .test-cta .t-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; color: var(--accent); margin-bottom: 16px; position: relative; }
+  .test-cta h2 { font-family: var(--serif); font-size: clamp(22px, 4vw, 36px); font-weight: 700; margin-bottom: 16px; position: relative; line-height: 1.4; }
+  .test-cta p { font-size: 13px; color: #666; line-height: 1.9; margin-bottom: 28px; position: relative; }
+  .test-btn { display: inline-block; font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; padding: 16px 40px; background: var(--accent); color: #fff; text-decoration: none; transition: background 0.2s; position: relative; }
+  .test-btn:hover { background: #c23518; }
+
+  /* フロー */
+  .flow-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .flow-card { background: var(--bg); padding: 28px 22px; }
+  .flow-card .f-num { font-family: var(--mono); font-size: 32px; font-weight: 300; color: var(--accent); opacity: 0.25; margin-bottom: 8px; line-height: 1; }
+  .flow-card h3 { font-family: var(--serif); font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+  .flow-card p { font-size: 12px; color: #666; line-height: 1.9; }
+
+  /* 100Banch */
+  .banch-box { border: 1px solid var(--line); padding: 32px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+  .banch-box h3 { font-family: var(--serif); font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+  .banch-box p { font-size: 13px; color: #666; line-height: 1.9; }
+  .banch-link { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; padding: 10px 20px; border: 1px solid var(--accent); color: var(--accent); text-decoration: none; white-space: nowrap; transition: all 0.2s; display: block; text-align: center; }
+  .banch-link:hover { background: var(--accent); color: #fff; }
+
+  /* CTA */
+  .cta-wrap { text-align: center; padding: 64px 0; }
+  .cta-wrap p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.8; }
+  .cta-btn { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; padding: 14px 36px; background: var(--accent); color: #fff; text-decoration: none; transition: background 0.2s; margin: 6px; }
+  .cta-btn:hover { background: #c23518; }
+  .cta-btn.outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+  .cta-btn.outline:hover { background: var(--accent); color: #fff; }
+
+  footer { padding: 40px 0; text-align: center; border-top: 1px solid var(--line); }
+  footer p { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.2em; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 640px) {
+    .container { padding: 0 24px; }
+    .flow-grid { grid-template-columns: 1fr; }
+    .banch-box { grid-template-columns: 1fr; }
+    body::before { background-size: 24px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="thread-canvas"></canvas>
+
+<div class="container">
+  <div class="back-bar">
+    <a class="back-link" href="index.html">← 亀田山瑚</a>
+  </div>
+
+  <div class="hero">
+    <p class="eyebrow">Research Project</p>
+    <h1>恋愛を、<br>データにする。<br>Love Analysis Project</h1>
+    <div class="hero-meta">
+      <span class="hero-badge filled">100Banch 採択</span>
+      <span class="hero-badge">進行中</span>
+    </div>
+    <p class="hero-desc">愛着スタイル・恋愛傾向・自己理解の深さを数値化し、「なぜ好きになるのか」を言語化する。感覚や運に委ねるのではなく、データと設計で恋愛を「学習できるもの」にする試み。</p>
+  </div>
+
+  <section>
+    <p class="section-label">まず、診断してみる</p>
+    <div class="test-cta reveal">
+      <p class="t-eyebrow">Diagnosis Tool</p>
+      <h2>あなたの恋愛観、<br>丸わかり？</h2>
+      <p>60問のスライダー式診断で、愛着スタイル・恋愛傾向・自己理解の深さを数値化。<br>診断結果は保存・シェア可能です。</p>
+      <a class="test-btn" href="https://tokyo-love-analytics.web.app/" target="_blank">恋テストを受ける →</a>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">プロジェクトの流れ</p>
+    <div class="flow-grid reveal">
+      <div class="flow-card">
+        <p class="f-num">01</p>
+        <h3>診断</h3>
+        <p>恋テストで自分の恋愛傾向を数値化。愛着スタイルと恋愛タイプを把握する。</p>
+      </div>
+      <div class="flow-card">
+        <p class="f-num">02</p>
+        <h3>実験WS</h3>
+        <p>診断結果をもとに仮説を立て、ワークショップで実際に試す。Before→Afterで差分を観察。</p>
+      </div>
+      <div class="flow-card">
+        <p class="f-num">03</p>
+        <h3>合コンへ</h3>
+        <p>実験と仮説を持ったまま実際の出会いの場へ。データをもとに、意図的に関係を築く。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">100Banch 採択プロジェクト</p>
+    <div class="banch-box reveal">
+      <div>
+        <h3>渋谷 100Banch に入居中</h3>
+        <p>パナソニックが運営する若者の実験区「100Banch」に、Love Analysis Projectとして採択・入居。恋愛を実験・研究するプロジェクトとして活動中。</p>
+      </div>
+      <a class="banch-link" href="https://100banch.com/projects/love-analysis-project" target="_blank">100Banch<br>プロジェクトページ →</a>
+    </div>
+  </section>
+
+  <div class="cta-wrap reveal">
+    <p>インタビュー・コラボ・取材のご相談はお気軽にどうぞ。</p>
+    <a class="cta-btn" href="https://www.instagram.com/sango35_art/" target="_blank">Instagram DM</a>
+    <a class="cta-btn outline" href="ws_romance.html">恋愛WSを見る →</a>
+  </div>
+
+  <footer>
+    <p>← <a href="index.html" style="color:var(--muted); text-decoration:none;">亀田山瑚 Portfolio</a></p>
+  </footer>
+</div>
+
+<script>
+const canvas = document.getElementById('thread-canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+let scrollProgress = 0;
+const threadPoints = [];
+const NUM_POINTS = 10;
+
+function generatePoints() {
+  threadPoints.length = 0;
+  const w = canvas.width;
+  for (let i = 0; i < NUM_POINTS; i++) {
+    const t = i / (NUM_POINTS - 1);
+    threadPoints.push({
+      x: w * 0.85 + Math.sin(t * Math.PI * 2.5) * w * 0.06,
+      y: t
+    });
+  }
+}
+generatePoints();
+window.addEventListener('resize', generatePoints);
+
+window.addEventListener('scroll', () => {
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+});
+
+function drawThread() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (threadPoints.length < 2) { requestAnimationFrame(drawThread); return; }
+  const pageH = document.body.scrollHeight;
+  const viewTop = window.scrollY;
+  const drawUpTo = scrollProgress;
+
+  ctx.save();
+  ctx.strokeStyle = 'rgba(232, 71, 42, 0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  let started = false;
+
+  for (let i = 0; i < threadPoints.length - 1; i++) {
+    const p0 = threadPoints[i];
+    const p1 = threadPoints[i + 1];
+    if (p0.y > drawUpTo + 0.15) break;
+    const segProgress = Math.min(1, Math.max(0, (drawUpTo - p0.y) / (p1.y - p0.y + 0.001)));
+    const x0 = p0.x;
+    const y0 = p0.y * pageH - viewTop;
+    const x1 = p0.x + (p1.x - p0.x) * segProgress;
+    const y1 = (p0.y + (p1.y - p0.y) * segProgress) * pageH - viewTop;
+    if (!started) { ctx.moveTo(x0, y0); started = true; }
+    ctx.lineTo(x1, y1);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  if (started && drawUpTo > 0.02) {
+    const lastIdx = Math.min(threadPoints.length - 2, Math.floor(drawUpTo * (threadPoints.length - 1)));
+    const p = threadPoints[lastIdx];
+    const screenY = p.y * pageH - viewTop;
+    ctx.beginPath();
+    ctx.arc(p.x, screenY, 4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232, 71, 42, 0.8)';
+    ctx.fill();
+  }
+
+  requestAnimationFrame(drawThread);
+}
+drawThread();
+
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>
