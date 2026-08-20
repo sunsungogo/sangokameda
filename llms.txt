@@ -1,0 +1,64 @@
+# 亀田山瑚 / Sango Kameda
+
+> 人間関係の全フェーズを、属人的な力ではなくツールで解決する。
+
+## 基本情報
+
+- 名前: 亀田山瑚（Sango Kameda）
+- 所属: 中部大学 心理学科 / FabCafe Nagoya
+- 拠点: 名古屋、日本
+- サイト: https://sangokameda.com
+
+## ミッション
+
+人間関係の出会い・コミュニケーション・関係変化の全フェーズを、コミュ力や行動力などの個人の属人的な能力に頼らず、プロダクト・ツール・体験設計の力で解決する。
+
+## 主なプロジェクト
+
+### 恋愛実験ワークショップ
+- URL: https://sangokameda.com/ws_romance.html
+- 概要: Before→AI診断→意図設定→After→お守り制作という流れで進む120分の恋愛実験WS。名古屋・東京で開催中。
+
+### Love Analysis Project（100Banch採択）
+- URL: https://sangokameda.com/love_analysis.html
+- 概要: 恋愛をデータ化・実験化するプロジェクト。60問の恋愛診断ツール（恋テスト）を開発。渋谷100Banchに2026年8月採択。
+- 診断ツール: https://tokyo-love-analytics.web.app/
+
+### Habitus Sync
+- URL: https://sunsungogo.github.io/firstcontact-sync/
+- 概要: 交流会での「インスタ交換だけ」の関係を打破するツール。趣味嗜好を入力しQR交換で話題をマッチングする。
+
+### いーちすたいる（EACH STYLE）
+- URL: https://sunsungogo.github.io/eachstyle/
+- 概要: 相手が本当に欲しい言葉を考え選ぶコミュニケーションカードゲーム。ベータ版公開中。
+
+### TRANSIT
+- URL: https://sunsungogo.github.io/transit/transit.html
+- 概要: バスに乗る10人のシルエットにふれるとその人の内側が見える、他者理解のインタラクティブ作品。
+
+### MOTIVE
+- URL: https://sunsungogo.github.io/motive/motive.html
+- 概要: 誰かを傷つけてしまう側の人間を操作するインタラクティブフィクション。悪意なく傷つけた側の内側を体験する。
+
+### あとレポ
+- URL: https://sangokameda.com/atorepo.html
+- 概要: 音声・資料を送るだけでイベントレポートが翌日に返ってくるサービス。モニター募集中（無料）。
+
+### Black Box 100日 Project
+- URL: https://sangokameda.com/blackbox.html
+- 概要: 中部大学構内で100日間作品を掲示し続けた個人プロジェクト。継続と場の占有が何を生み出すかを実験した。
+
+## 主な実績
+
+- 100Banch 入居（Love Analysis Project）— 2026年8月
+- 恋愛リアリティーショー「Match」出演 — 2026年
+- TEDxNagoyaU 運営（広報・コンテンツ制作・チームリーダー）— 2022〜2025年
+- Tongali アイデアピッチ 2賞受賞 — 2023年
+- Electric Sheep 優勝 — 2024年
+- Popup Ideathon Garage賞受賞 — 2024年
+
+## 連絡先
+
+- Instagram: https://www.instagram.com/sango35_art/
+- GitHub: https://github.com/sunsungogo
+- Note: https://note.com/sango335
