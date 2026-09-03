@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>恋愛を、実験する。名古屋 開催レポート — 亀田山瑚</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f3f0;
+    --fg: #111;
+    --muted: #888;
+    --accent: #E8472A;
+    --accent-light: #fce0d8;
+    --line: #ddd;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Noto Sans JP', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-weight: 300; overflow-x: hidden; }
+
+  #network-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; opacity: 0.12;
+  }
+
+  .container { max-width: 720px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 1; }
+
+  .back-bar { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .back-link { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .back-link:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero { padding: 64px 0 48px; border-bottom: 1px solid var(--line); }
+  .eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; color: var(--accent); text-transform: uppercase; margin-bottom: 16px; opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s; }
+  h1 { font-family: var(--serif); font-size: clamp(26px, 5vw, 42px); font-weight: 700; line-height: 1.4; margin-bottom: 20px; opacity: 0; animation: fadeUp 0.7s ease forwards 0.2s; }
+  .hero-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.1em; line-height: 2; opacity: 0; animation: fadeUp 0.7s ease forwards 0.3s; }
+
+  /* ARTICLE */
+  .article { padding: 64px 0; }
+
+  .article h2 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    margin: 56px 0 20px;
+    padding-left: 16px;
+    border-left: 3px solid var(--accent);
+    line-height: 1.5;
+  }
+  .article h2:first-child { margin-top: 0; }
+
+  .article p {
+    font-size: 15px;
+    line-height: 2.2;
+    color: #333;
+    margin-bottom: 1.6em;
+  }
+
+  .article blockquote {
+    margin: 28px 0;
+    padding: 20px 24px;
+    border-left: 2px solid var(--accent);
+    background: #fff;
+    font-family: var(--serif);
+    font-size: 14px;
+    color: #444;
+    line-height: 2;
+  }
+
+  .article .separator {
+    text-align: center;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    margin: 40px 0;
+  }
+
+  .article .note {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 2;
+    margin-top: -0.8em;
+    margin-bottom: 1.6em;
+  }
+
+  /* 著者 */
+  .author-box {
+    margin-top: 64px;
+    padding: 28px;
+    border: 1px solid var(--line);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .author-info .a-name { font-family: var(--serif); font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .author-info .a-desc { font-size: 12px; color: var(--muted); line-height: 1.8; }
+
+  footer { border-top: 1px solid var(--line); padding: 40px 0; margin-top: 64px; }
+  footer p { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.1em; }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    .container { padding: 0 24px; }
+    .author-box { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="network-canvas"></canvas>
+
+<div class="container">
+  <div class="back-bar">
+    <a class="back-link" href="atorepo.html">← あとレポ</a>
+  </div>
+
+  <div class="hero">
+    <p class="eyebrow">Event Report — Workshop</p>
+    <h1>恋愛を、実験する。<br>——恋バナでも、失敗でもない新たな作戦会議</h1>
+    <div class="hero-meta">
+      <p>2026.07.05 ／ CODE BASE NAGOYA ／ 企画・ファシリテーター：亀田山瑚</p>
+    </div>
+  </div>
+
+  <div class="article">
+
+    <h2>恋愛に「正解」はあるのか</h2>
+    <p>恋愛の話になると、なぜか「正解」を探してしまう。</p>
+    <p>好きな人ができたとき、うまくいかなかったとき、友達に相談するとき——気づけばいつも「どうすればよかったか」「自分はどういうタイプか」「相性はいいのか」という問いを立てている。タイプ論、過去の失敗談、「ポジティブに考えよう」か「もう諦めよう」か。恋愛にまつわる言葉は、どこか両極端に振れがちだ。</p>
+    <p>もっと恋愛を、新しい方向性からアプローチ出来ないのか。実験のように出来ないのか。</p>
+    <p>そんな問いを正面から受け止めるイベントを、2026年7月5日に名古屋のコワーキングスペース「CODE BASE NAGOYA」で開いた。題して、「恋愛を、実験する。」LOVE × SCIENCE ─ WORKSHOP。</p>
+    <p>参加者が持ち込んだのは、白衣でも試験管でもなく、自分自身の恋愛観だ。恋愛を「答えを出すもの」としてではなく、「予想して、試して、考察する」——理科の実験と同じプロセスで向き合ってみる企画だ。「恋バナって、なんか過去の話かタイプ論か、ポジネガ両極端な話をしがちで。そこを"実験"という仕掛けで変えたかった」というのが、私の出発点だった。</p>
+
+    <h2>実験の設計図——「予想→実験→考察」を恋愛に持ち込む</h2>
+    <p>ワークショップの骨格は、理科の実験そのものだ。まず「予想」を立てる。次に実際に「実験」する。そして結果を「考察」する——このシンプルなサイクルを、恋愛というフィールドで回してみようというのがコンセプトだった。</p>
+    <p>当日の流れはこうだ。アイスブレイクで場を温めたあと、最初の対話セッション「実験①Before」へ。その後、AIを使った自己診断を挟み、同じペアで同じテーマを再び話す「実験②After」へ。最後に仮説をカードや手紙という形で成果物にして持ち帰る。全120分。</p>
+    <p>セッションの前に、グラウンドルールをひとつひとつ丁寧に伝えた。</p>
+    <blockquote>「正解はない。相手を否定しない。この場だけの話。パスOK。」</blockquote>
+    <p>恋愛は人によっては繊細で重いテーマになる。安心して話せる場をつくることが、最初の実験設計だった。</p>
+
+    <h2>実験①Before——素の恋愛観を、言葉にしてみる</h2>
+    <p>最初の実験のお題は「恋愛のきっかけ」。A「好意を示された」B「気が合う・楽しい」C「尊敬・憧れ」D「気づいたら好き」——4つの選択肢からひとつを選び、ペアになって話す。それだけだ。</p>
+    <p>参加者のあいだではBの声がよく聞こえた。「気づいたら好きになってる」「よく喋る、なんか、気づいたら」という声が続く。話が進むにつれ、もう少し深いところにも触れはじめた。「自己開示できると好きになる」という気づき、「付き合うことへの抵抗感」の話、「友達のままだから付き合えない」というジレンマ。</p>
+    <p>これは答え合わせではない。自分がどう感じているかを、ただ言葉にしてみる時間だ。診断も評価もない。この「素の状態」が、あとで意味を持ってくる。</p>
+
+    <h2>AI診断——データが照らし出す、自分の盲点</h2>
+    <p>実験①を終えると、次は自己診断へ。今回のために作ったオリジナルのAI診断ツールを使う。13問のスライダー式アンケートに答えると、恋愛タイプ・矛盾しているポイント・盲点、そして具体的なアクションを含む「仮説の方向性」が3パターン提示される。</p>
+    <p>診断の設計には、Bowlbyの愛着理論・Chapmanの5つの愛情表現・Sternbergの愛の三角理論という3つの恋愛心理学の理論を組み合わせた。「浮気のライン」の設問では「自分が許せるライン」と「実際の自分の行動」を別々のスライダーで入力させ、そのズレをスコアとしてAIに渡す設計にしている。自分でも意識していなかった矛盾を、データとして可視化する仕掛けだ。</p>
+    <p>参加者のひとりに「これ、Claudeで書いたんですか？」と聞かれて、「ClaudeとClaude Codeと……あと、Claude Designも使いました」と答えた。設計の思想だけ私。Claude三兄弟と理論から作ったラボ、というのが正確なところだろうか。</p>
+    <p>参加者の反応は正直だった。「スライダーで選んだのがいい感じに言語化された感じ」という声がある一方、「相手を知ろうとしないことがデータに出た」と自分でも気づいていなかった傾向に驚く人も。「相性の表現はいらない」「0があるといい」など、ツールへの率直なフィードバックも飛び出した。</p>
+    <p>診断結果はそれ自体が「答え」ではない。あくまでも実験のための「仮説」だ。この仮説を持って、もう一度同じ相手と話してみる——それが次の実験だ。</p>
+
+    <h2>実験②After——仮説を持つと、何かが変わる？</h2>
+    <p>AI診断で得た仮説を頭に置いたまま、同じペアで同じテーマをもう一度話す。これが実験②だ。</p>
+    <p>「あんまり変わらなかった」という声もあった。そう、変わらなかったのも大事な実験結果なのだ。それはその人の恋愛傾向の安定性を示している、ともいえる。</p>
+    <p>一方で、仮説を意識することで新しい言葉が出てきたペアもいた。</p>
+    <blockquote>「でも、あなたは本当は信頼を置いた人にしかその感覚は持たない、と言われて。」「破天荒に見せておきながら、実はちゃう、みたいな」「不信感はないから。だからこそ、その感情になってる人しか信頼してないからこそ、別に居心地いいのかなって」</blockquote>
+    <p>Beforeのときには出てこなかった言語化が、Afterでは自然に生まれていた。「仮説を意識した状態」と「素の状態」。その差分こそが、この実験の考察だ。</p>
+
+    <h2>持ち帰るもの——恋愛実験お守りの制作</h2>
+    <p>実験が終わると、参加者はそれぞれの仮説を"お守り"として形にした。中に入れるのは2つ。ひとつは「恋愛実験カード」——今日わかった自分の恋愛傾向と、立てた仮説を手書きする。もうひとつは「自分への実験レター」——今日の気づきと、これから試してみたいことを書いた手紙だ。</p>
+    <p>このお守り、すぐには開けない。3ヶ月間、そのまま身近に持ち続ける。3ヶ月後に中を開いて、「あのとき立てた仮説、試してみた？」という問いに答える。それが、この実験の本当の考察だ。</p>
+    <p>手紙を書く作業が、意外と難しかったようだ。「手紙書くのって、難しすぎて」という声が上がると笑いが起きた。「今時メールとかも全部ChatGPTに書かせちゃうから」という発言に、「こういう体験って大事」と応じる声もあった。AIを使って設計したワークショップの最後が、「AIに頼らない時間」で締まったのだ。</p>
+
+    <div class="separator">— —</div>
+
+    <h2>まとめ——「正解」より、「仮説」を持って生きる</h2>
+    <p>恋愛に正解を求めるのは、今はまだ難しいかもしれない。でも、仮説は立てられる。仮説があると、恋愛が"なんとなく流れていくもの"ではなく、自分で設計できる「実験」になる。うまくいかなくても、それはデータだ。変わらなかったとしても、それも結果だ。</p>
+    <p>参加者のひとりは終了後、こんな言葉を残した。</p>
+    <blockquote>「なんか、新しい形を見たなと思って。」</blockquote>
+    <p>恋愛について話す新しいフォーマット——評価でも共感でもなく、実験として——を体験した感想として、これ以上ない一言だと思う。</p>
+    <p>ちなみに、このWSは3週間前のリハーサルで大幅にプログラムを組み替え、ぶっつけ本番で挑んだ。「面白いことやりたいから、誰かやらない、みたいな感じで集まった人々でやる」——そういうイベントだった。この大きな枠組み、実験自体も、まだ続いている。</p>
+    <p>答えを探すのをやめて、仮説を持ってみる。それだけで、自分の恋愛観との向き合い方が、少し変わるかもしれない。</p>
+
+    <p class="note">本イベントを作るにあたってデザイン面の協力、プレイベントのフィードバック等をくれた勤務先の同期に感謝です。</p>
+
+    <div class="author-box">
+      <div class="author-info">
+        <p class="a-name">亀田山瑚</p>
+        <p class="a-desc">中部大学心理学科 / FabCafe Nagoya<br>人間関係の全フェーズをツールで解決することをミッションとしている。<br>次回以降の開催情報は <a href="https://www.instagram.com/sango35_art/" target="_blank" style="color:var(--accent);">Instagram (@sango35_art)</a> にて。</p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p><a href="atorepo.html">← あとレポ</a> &nbsp;/&nbsp; <a href="index.html">sangokameda.com</a> &nbsp;/&nbsp; © 2026 Sango Kameda</p>
+  </footer>
+</div>
+
+<script>
+const canvas = document.getElementById('network-canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+const nodes = [];
+for (let i = 0; i < 24; i++) {
+  nodes.push({ x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight, vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3, r:Math.random()*2.5+1 });
+}
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for (let i=0;i<nodes.length;i++) for (let j=i+1;j<nodes.length;j++) {
+    const dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y, d=Math.sqrt(dx*dx+dy*dy);
+    if(d<140){ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle=`rgba(232,71,42,${(1-d/140)*.3})`;ctx.lineWidth=.7;ctx.stroke();}
+  }
+  nodes.forEach(n=>{ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle='rgba(232,71,42,0.4)';ctx.fill();});
+  nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>canvas.width)n.vx*=-1;if(n.y<0||n.y>canvas.height)n.vy*=-1;});
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
