@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>情災 — 亀田山瑚</title>
+<meta name="description" content="実際の経験をもとに、心理学×防災の視点から、見えない被害に名前をつける試み">
+<meta name="author" content="亀田山瑚">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  /* ── Token system ── */
+  :root {
+    --bg:           #f5f3f0;
+    --fg:           #111;
+    --muted:        #888;
+    --accent:       #E8472A;
+    --accent-light: #fce0d8;
+    --accent-dim:   rgba(232,71,42,0.08);
+    --line:         #ddd;
+    --surface:      #efede9;
+    --mono:   'DM Mono', monospace;
+    --serif:  'Shippori Mincho', serif;
+    --sans:   'Noto Sans JP', sans-serif;
+  }
+
+  /* ライト固定（sangokameda.comに合わせて） */
+
+  /* ── Reset ── */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-weight: 300;
+    overflow-x: hidden;
+    padding-inline: 0;
+  }
+
+  /* ── Canvas ── */
+  #network-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.15;
+  }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 720px;
+    margin-inline: auto;
+    padding-inline: 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ── */
+  header {
+    padding-block: 80px 60px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.1s;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(38px, 7vw, 68px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+
+  .h1-reading {
+    display: block;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 8px;
+    text-transform: lowercase;
+  }
+
+  .tagline {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 24px;
+    line-height: 1.9;
+    max-width: 520px;
+    border-left: 2px solid var(--accent);
+    padding-left: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.35s;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Nav ── */
+  nav {
+    padding-block: 20px;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: rgba(245,243,240,0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+
+  /* ライト固定 — ダークオーバーライドなし */
+
+  .nav-inner {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+
+  nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--accent); }
+  nav a.current { color: var(--accent); }
+
+  /* ── Article ── */
+  .article-body {
+    padding-block: 80px 60px;
+  }
+
+  /* Section label */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  /* Each article section */
+  .article-section {
+    padding-block: 56px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 0 32px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .article-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    padding-top: 6px;
+    text-align: right;
+    padding-right: 0;
+    line-height: 1.6;
+  }
+
+  .section-content {}
+
+  .section-content h2 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+    margin-bottom: 28px;
+  }
+
+  .section-content h3 {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 700;
+    margin-block: 28px 12px;
+    letter-spacing: 0.01em;
+  }
+
+  .section-content p {
+    font-size: 14.5px;
+    line-height: 2.05;
+    color: var(--fg);
+    margin-bottom: 1.5em;
+    max-width: 62ch;
+  }
+  .section-content p:last-child { margin-bottom: 0; }
+
+  .section-content ul {
+    margin-block: 16px;
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
+  }
+  .section-content ul li {
+    font-size: 14.5px;
+    line-height: 2;
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+  .section-content ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+
+  /* Phase flow diagram */
+  .phase-flow {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 24px 28px;
+    margin-block: 24px;
+    font-size: 13px;
+    line-height: 2.2;
+    color: var(--fg);
+  }
+  .phase-flow .phase-item {
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+  }
+  .phase-flow .phase-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    min-width: 72px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .phase-flow .phase-text {
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: var(--fg);
+  }
+  .phase-flow .phase-arrow {
+    text-align: left;
+    padding-left: 72px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    padding-block: 2px;
+  }
+
+  /* Harm types — two-col grid */
+  .harm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-block: 24px;
+  }
+  .harm-card {
+    border: 1px solid var(--line);
+    padding: 20px;
+  }
+  .harm-card .harm-type {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .harm-card p {
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--fg);
+    margin: 0;
+    max-width: none;
+  }
+
+  /* Key definition highlight */
+  .definition-block {
+    background: var(--accent-dim);
+    border-left: 3px solid var(--accent);
+    padding: 28px 32px;
+    margin-block: 32px;
+  }
+  .definition-block .def-term {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .definition-block .def-reading {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 20px;
+  }
+  .definition-block p {
+    font-size: 14px;
+    line-height: 2;
+    color: var(--fg);
+    max-width: none;
+    margin: 0;
+  }
+
+  /* Usage examples */
+  .usage-examples {
+    margin-block: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .usage-ex {
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--fg);
+    padding: 12px 20px;
+    background: var(--surface);
+    border-left: 2px solid var(--line);
+  }
+
+  /* Afterword */
+  .afterword {
+    padding-block: 56px;
+    border-top: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .afterword.visible { opacity: 1; transform: translateY(0); }
+
+  .afterword-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .afterword-text {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 2.1;
+    color: var(--muted);
+    font-style: italic;
+    max-width: 58ch;
+    padding-left: 88px;
+  }
+  .afterword-text p { margin-bottom: 1.5em; }
+  .afterword-text p:last-child { margin-bottom: 0; }
+
+  /* References */
+  .references {
+    padding-block: 48px;
+    border-top: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .references.visible { opacity: 1; transform: translateY(0); }
+
+  .ref-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: block;
+  }
+  .ref-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ref-list li {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--muted);
+    list-style: none;
+    padding-left: 0;
+  }
+
+  /* Call to action at bottom */
+  .cta-note {
+    margin-top: 40px;
+    padding: 20px 24px;
+    border: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .cta-note strong {
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--line);
+    padding-block: 40px;
+  }
+  footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .container { padding-inline: 24px; }
+
+    .article-section {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .section-num {
+      text-align: left;
+      padding-top: 0;
+    }
+    .afterword-text { padding-left: 0; }
+    .harm-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article-section, .afterword, .references {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    header .eyebrow, header h1, header .tagline {
+      opacity: 1;
+      animation: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="network-canvas"></canvas>
+
+<div class="container">
+
+  <header>
+    <p class="eyebrow">Sango Kameda — Essay / 2026.09</p>
+    <h1>情災<span class="h1-reading">じょうさい</span></h1>
+    <p class="tagline">実際の経験をもとに、心理学×防災の視点から、<br>見えない被害に名前をつける試み</p>
+  </header>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html">← home</a>
+      <a href="#" class="current">情災</a>
+    </div>
+  </nav>
+
+  <article class="article-body">
+
+    <p class="section-label">概念提案</p>
+
+    <!-- はじめに -->
+    <section class="article-section">
+      <div class="section-num">intro</div>
+      <div class="section-content">
+        <h2>はじめに</h2>
+        <p>2026年9月、名古屋市を中心とする線状降水帯により記録的な豪雨が起きた。</p>
+        <p>河川の氾濫、道路の冠水、交通機関の乱れ。ニュースは被害の「大きさ」を伝え、名古屋市や愛知県の尽力で被害は最小限に抑えられた。数時間で交通インフラは再開し、翌日には既に多くの「日常」が戻っていた。</p>
+        <p>でも、私が名古屋に住む中で受けたことは別のことだった。</p>
+        <p>家が流されたわけでも、怪我をしたわけでもない。目に見える被害はわずかに帰宅時間が遅くなっただけかもしれない。それでも、あの夜から何かが変わった気がした。眠りの質が浅い。不安が消えない。しんどさが残る。</p>
+        <p>そして翌朝、「動けるなら来て」という空気の中で、私は当たり前のように出勤した。</p>
+        <p>これは今何が起きているのか分析をしたくなり、この提案を書く。</p>
+      </div>
+    </section>
+
+    <!-- 0 -->
+    <section class="article-section">
+      <div class="section-num">0</div>
+      <div class="section-content">
+        <h2>時代背景：「小さな災害」はこれから増える</h2>
+        <p>まず、気候変動の影響により、局地的な豪雨や短時間強雨の頻度は増加している。</p>
+        <p>先日の豪雨の通り、大規模な震災や津波ではなく、「その地域の一部だけが被害を受ける」タイプの災害が増えており、同時にその回復スピードも今後早くなるだろう。</p>
+        <p>今回の名古屋の豪雨も、その一例だ。都市全体が止まったわけではない。しかし確かに、誰かの日常はわずかに変わった。</p>
+        <p>「大きくはないけど、小さくもない」——そういう災害に、この国の「インフラ」や「物資」は対応していく。だが私たちの「心」はまだ対策ができていない。</p>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="article-section">
+      <div class="section-num">1</div>
+      <div class="section-content">
+        <h2>問題提起：「小さな被災」の当事者は、どこにいるのか</h2>
+        <p>まず災害の被害には、大きく2種類ある。</p>
+
+        <div class="harm-grid">
+          <div class="harm-card">
+            <span class="harm-type">見える被害</span>
+            <p>家屋の損壊、浸水、物的損失。写真に撮れる。数字にできる。制度が動く。</p>
+          </div>
+          <div class="harm-card">
+            <span class="harm-type">見えない被害</span>
+            <p>不安、不眠、過覚醒、心理的疲弊。証明しにくい。制度が動かない。本人すら「大げさかも」と思ってしまう。</p>
+          </div>
+        </div>
+
+        <p>さらに、「小さな被災」の場合に特有の問題がある。</p>
+        <p>物理的被害が限定的であるほど、周囲からは「大丈夫な人」として扱われる。そして本人も、自分の心理的ダメージを「これくらいで弱音を吐いてはいけない」と抑圧する。</p>
+        <p><strong>被害を受けた側が、被害を訴えられない構造</strong>がそこにある。</p>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="article-section">
+      <div class="section-num">2</div>
+      <div class="section-content">
+        <h2>構造提示：既存の回復モデルが見ていないもの</h2>
+        <p>防災心理学には、被災者の心理的回復を時系列で示したモデルがある（林春男『いのちを守る地震防災学』等）。このモデルは大規模災害を前提としており、「非日常が一定期間続く」ことを前提に設計されている。</p>
+
+        <div class="phase-flow">
+          <div class="phase-item">
+            <span class="phase-label">Phase 0</span>
+            <span class="phase-text">発災直後：茫然自失・混乱・恐怖</span>
+          </div>
+          <div class="phase-item">
+            <span class="phase-label">Phase 1</span>
+            <span class="phase-text">〜1週間：緊張の持続・使命感・高揚</span>
+          </div>
+          <div class="phase-item">
+            <span class="phase-label">Phase 2</span>
+            <span class="phase-text">〜1ヶ月：ハネムーン期・連帯感・一見元気 → 生活ストレスが蓄積</span>
+          </div>
+          <div class="phase-item">
+            <span class="phase-label">Phase 3</span>
+            <span class="phase-text">〜数年：疲弊・抑うつ・長期的回復</span>
+          </div>
+        </div>
+
+        <p>では、「小さな被災」の場合はどうか。</p>
+
+        <div class="phase-flow">
+          <div class="phase-item">
+            <span class="phase-label">発災当日</span>
+            <span class="phase-text">恐怖・緊張・混乱</span>
+          </div>
+          <div class="phase-arrow">↓</div>
+          <div class="phase-item">
+            <span class="phase-label">翌日</span>
+            <span class="phase-text">「動けるなら日常に戻れ」</span>
+          </div>
+          <div class="phase-arrow">↓</div>
+          <div class="phase-item">
+            <span class="phase-label">強制</span>
+            <span class="phase-text">当たり前の生活への強制リセット</span>
+          </div>
+          <div class="phase-arrow">↓</div>
+          <div class="phase-item">
+            <span class="phase-label">乖離</span>
+            <span class="phase-text">心はまだPhase 0にいるのに、身体は日常モードを求められる</span>
+          </div>
+        </div>
+
+        <p><strong>すなわち、回復のプロセスを踏む時間が、最初から与えられない。</strong></p>
+        <p>これが「小さな被災」における見えない被害の核心だ。既存の回復モデルには、このケースへの視点が存在しない。</p>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="article-section">
+      <div class="section-num">3</div>
+      <div class="section-content">
+        <h2>既存研究の限界：概念の空白地帯</h2>
+        <p>2024年、海外の研究者たちが「Disaster Invisibility Framework（災害不可視性フレームワーク）」という新しい概念を提唱し始めた。これは災害の心理的・社会的影響を「見えないもの」として捉え直す試みで、以下の4つで構成される。</p>
+        <ul>
+          <li>Invisible Risks（見えないリスク）</li>
+          <li>Invisible Harms（見えない被害）</li>
+          <li>Invisible Community（見えないコミュニティ）</li>
+          <li>Invisible Changes（見えない変化）</li>
+        </ul>
+        <p>この視点は重要な前進だ。しかし、このフレームワークも「大規模災害の中の見えない被害」を対象としている。</p>
+        <p>「小さな被災における心理的影響」を指す概念は、英語にも、日本語にも、まだ存在しない。</p>
+        <p>ここに、概念及び言語の欠損がある。</p>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="article-section">
+      <div class="section-num">4</div>
+      <div class="section-content">
+        <h2>概念提案：「情災（じょうさい）」</h2>
+        <p>私はこの空白を埋める言葉として、「情災（じょうさい）」という概念を提案したい。</p>
+
+        <div class="definition-block">
+          <span class="def-term">情災</span>
+          <span class="def-reading">じょうさい</span>
+          <p>物理的被害の大小にかかわらず、災害によって生じる感情・心理面での被災状態を指す。見えない被害として認識されにくく、当事者自身も自覚・表明しにくい点に特徴がある。</p>
+        </div>
+
+        <p>「情」は感情・心理を、「災」は被災を意味する。「震災」と音は異なり、混同されにくい。1語で使えるため、日常語としての定着を目指せる。</p>
+        <p><strong>情災は、大きな被災の中にも、小さな被災の中にも存在する。</strong>そして特に、「小さな被災」においてこそ、この言葉が必要だと私は考えている。</p>
+
+        <div class="usage-examples">
+          <div class="usage-ex">「情災を受けた」</div>
+          <div class="usage-ex">「情災状態にある」</div>
+          <div class="usage-ex">「情災への配慮」</div>
+        </div>
+
+        <p>こういう言葉が日常に根付いたとき、「動けるなら来い」という空気は、少しずつ変わるかもしれない。</p>
+      </div>
+    </section>
+
+    <!-- おわりに -->
+    <div class="afterword">
+      <span class="afterword-label">おわりに — あとがき</span>
+      <div class="afterword-text">
+        <p>9月8日の帰宅後はアドレナリンと被災から脱せたことによる、興奮と安堵の混ざった気持ちだった。だからこそ豪雨の際の警報音と、それに伴う過集中により、眠るまでも時間がかかり、寝つきも悪かった。</p>
+        <p>翌日の朝、別の勤務先からは通常通りという共有と、来てくださいの文字が乗っていた。これが今回のこの概念を提唱することになった発端である。</p>
+        <p>その1日を過している中で、「大丈夫だった？」「どう帰った？」の話はあれど、不安への同調や寄り添いは全く無かった。いや、私が発信出来なかったのだろう。職場という環境に、自分の気持ちを出すことに怯えていた。</p>
+        <p>そしてその翌日から休みを取り、今このことを記している。</p>
+        <p>はっきり言えばポジティブな記事でもないのを書きたくはなかった、だがここで提唱し、今後更に災害が増えていく社会に、情災という概念が、それを受ける人がいて、それを救う社会モデルが構築されていくことを、一人の情災状態の人間として、切に願い、行動していきたい。</p>
+      </div>
+    </div>
+
+    <!-- References -->
+    <div class="references">
+      <span class="ref-label">参考・関連概念</span>
+      <ul class="ref-list">
+        <li>林春男（2003）『いのちを守る地震防災学』岩波書店</li>
+        <li>Disaster Invisibility Framework（2024, ScienceDirect）</li>
+        <li>サイコロジカル・ファーストエイド（PFA）</li>
+        <li>心理的回復フェーズモデル（厚生労働省・各都道府県ガイドライン）</li>
+      </ul>
+      <div class="cta-note">
+        この概念は提案段階のものです。<br>
+        <strong>「情災」という言葉に共感した方</strong>、同じ経験をした方の声を聞かせてください。
+      </div>
+    </div>
+
+  </article>
+
+  <footer>
+    <p><a href="index.html">← sangokameda.com</a> &nbsp;/&nbsp; © 2026 Sango Kameda</p>
+  </footer>
+
+</div>
+
+<script>
+/* Network canvas — same as main site */
+const canvas = document.getElementById('network-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const nodes = [];
+const NODE_COUNT = 28;
+for (let i = 0; i < NODE_COUNT; i++) {
+  nodes.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    r: Math.random() * 3 + 1.5
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 160) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.strokeStyle = `rgba(232, 71, 42, ${(1 - dist / 160) * 0.4})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+    }
+  }
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232, 71, 42, 0.5)';
+    ctx.fill();
+  });
+  nodes.forEach(n => {
+    n.x += n.vx;
+    n.y += n.vy;
+    if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+    if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* Scroll reveal */
+const revealEls = document.querySelectorAll('.article-section, .afterword, .references');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.05 });
+revealEls.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
