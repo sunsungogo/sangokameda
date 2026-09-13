@@ -453,15 +453,20 @@
         // 愛知県全体で見てしまうと、県内どこかの市町村の些細な注意報にも
         // 反応してしまい、名古屋が平常でもチェックに飛んでしまうため。
         var nagoyaEntry = null;
+        var allCodes = [];
         (data.areaTypes || []).forEach(function (at) {
           (at.areas || []).forEach(function (a) {
             var code = a.area && a.area.code;
+            if (code) allCodes.push(code);
             if (code === NAGOYA_AREA_CODE) nagoyaEntry = a;
           });
         });
 
         if (!nagoyaEntry) {
-          // 名古屋市のデータ構造が見つからない = 確証を持って判定できない
+          // 名古屋市のデータ構造が見つからない = 確証を持って判定できない。
+          // デバッグ用に、実際に取得できたエリアコード一覧とJSON全体をコンソールに出す。
+          console.warn('[情災チェック] 名古屋市コード(' + NAGOYA_AREA_CODE + ')が見つかりませんでした。取得できたエリアコード一覧:', allCodes);
+          console.warn('[情災チェック] 取得したJSON全体:', data);
           show('screen-fallback');
           return;
         }
@@ -472,8 +477,9 @@
           show('screen-safe');
         }
       })
-      .catch(function () {
+      .catch(function (err) {
         clearTimeout(timeout);
+        console.error('[情災チェック] 気象データの取得に失敗しました:', err);
         show('screen-fallback');
       });
   }
