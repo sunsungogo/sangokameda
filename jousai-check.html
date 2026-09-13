@@ -464,9 +464,10 @@
 
         if (!nagoyaEntry) {
           // 名古屋市のデータ構造が見つからない = 確証を持って判定できない。
-          // デバッグ用に、実際に取得できたエリアコード一覧とJSON全体をコンソールに出す。
+          // デバッグ用に、実際のJSON構造を文字列でそのまま出す（コピペしやすいように）。
           console.warn('[情災チェック] 名古屋市コード(' + NAGOYA_AREA_CODE + ')が見つかりませんでした。取得できたエリアコード一覧:', allCodes);
-          console.warn('[情災チェック] 取得したJSON全体:', data);
+          console.warn('[情災チェック] areaTypes[0]の生JSON:\n' + JSON.stringify(data.areaTypes && data.areaTypes[0], null, 2));
+          console.warn('[情災チェック] areaTypes[1]の生JSON:\n' + JSON.stringify(data.areaTypes && data.areaTypes[1], null, 2));
           show('screen-fallback');
           return;
         }
