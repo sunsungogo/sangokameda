@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>情災チェック / Sango Kameda</title>
+<meta name="description" content="気象警報が出ているとき、あなたの心と体の状態をそっと確認するセルフチェックツール。心理学×防災の視点から生まれた「情災（じょうさい）」という考え方のPoCです。">
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #f4ede3;
+    --card: #fffaf3;
+    --card-soft: #fbf2e7;
+    --ink: #3c342c;
+    --muted: #8c7f70;
+    --line: #e8dcc9;
+    --terracotta: #c1694f;
+    --terracotta-deep: #a3543d;
+    --pink: #e7c3ba;
+    --pink-soft: #f3ded6;
+    --sage: #93998a;
+    --safe: #8fa383;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Noto Sans JP', sans-serif;
+    --radius: 24px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* soft grain texture overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.05;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 20px 56px;
+    position: relative;
+  }
+
+  .brand-link {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .brand-link:hover { color: var(--terracotta); }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--terracotta);
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .screen {
+    display: none;
+    animation: fadeUp 0.5s ease;
+  }
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 40px 28px;
+    box-shadow: 0 12px 40px rgba(60, 52, 44, 0.06);
+    border: 1px solid var(--line);
+  }
+
+  h1, h2 {
+    font-family: var(--serif);
+    font-weight: 700;
+    line-height: 1.6;
+    margin: 0 0 18px;
+    color: var(--ink);
+  }
+  h1 { font-size: 22px; text-align: center; }
+  h2 { font-size: 20px; }
+
+  p.lead {
+    font-size: 14px;
+    line-height: 2;
+    color: var(--muted);
+    text-align: center;
+    margin: 0 0 28px;
+  }
+
+  /* ---- loading ---- */
+  .spinner-wrap { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .spinner {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    border: 3px solid var(--pink-soft);
+    border-top-color: var(--terracotta);
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  /* ---- safe screen ---- */
+  .safe-badge {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--card-soft);
+    border: 1px solid var(--safe);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 26px;
+  }
+
+  .manual-check {
+    display: block;
+    text-align: center;
+    margin-top: 28px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    text-decoration: none;
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+  }
+  .manual-check:hover { color: var(--terracotta); }
+
+  /* ---- progress dots ---- */
+  .dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 28px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--line); transition: all 0.3s; }
+  .dot.on { background: var(--terracotta); width: 20px; border-radius: 4px; }
+
+  /* ---- choices ---- */
+  .choices { display: flex; flex-direction: column; gap: 12px; }
+  .choice-btn {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 400;
+    text-align: left;
+    background: var(--card-soft);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 20px;
+    cursor: pointer;
+    color: var(--ink);
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  }
+  .choice-btn:hover {
+    background: var(--pink-soft);
+    border-color: var(--pink);
+  }
+  .choice-btn:active { transform: scale(0.99); }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+  }
+  .back-link:hover { color: var(--terracotta); }
+
+  /* ---- result ---- */
+  .result-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--terracotta-deep);
+    background: var(--pink-soft);
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+
+  .result-message {
+    font-size: 14.5px;
+    line-height: 2;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  .care-box {
+    background: var(--card-soft);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 22px 20px;
+    margin-bottom: 16px;
+  }
+  .care-box h3 {
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin: 0 0 12px;
+    color: var(--terracotta-deep);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .care-box p, .care-box li {
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--muted);
+  }
+  .care-box ul { margin: 0; padding-left: 18px; }
+  .care-box a { color: var(--terracotta-deep); }
+
+  .template-box {
+    background: #fff;
+    border: 1px dashed var(--pink);
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 12.5px;
+    line-height: 1.9;
+    color: var(--ink);
+    white-space: pre-wrap;
+    margin-bottom: 12px;
+  }
+
+  .copy-btn {
+    width: 100%;
+    background: var(--terracotta);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 13px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .copy-btn:hover { background: var(--terracotta-deep); }
+  .copy-btn.copied { background: var(--safe); }
+
+  .restart-link {
+    display: block;
+    text-align: center;
+    margin-top: 24px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .restart-link:hover { color: var(--terracotta); }
+
+  .disclaimer {
+    font-size: 10.5px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.8;
+    margin-top: 18px;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 420px) {
+    .card { padding: 32px 20px; border-radius: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a class="brand-link" href="index.html">← Sango Kameda</a>
+
+  <!-- LOADING -->
+  <div class="screen active" id="screen-loading">
+    <div class="eyebrow">情災チェック / JOUSAI CHECK</div>
+    <div class="card">
+      <div class="spinner-wrap">
+        <div class="spinner"></div>
+        <div class="loading-text">いまの空模様を確認しています…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAFE -->
+  <div class="screen" id="screen-safe">
+    <div class="eyebrow">情災チェック / JOUSAI CHECK</div>
+    <div class="card">
+      <div class="safe-badge">🌤️</div>
+      <h1>現在、情災リスクは低いです</h1>
+      <p class="lead" id="safe-text">名古屋市・愛知県に気象警報は出ていません。<br>あなたの心と体も、どうか穏やかでありますように。</p>
+      <a class="manual-check" href="#" id="manual-check-link">警報がなくても、なんとなく気になる。→ セルフチェックする</a>
+    </div>
+  </div>
+
+  <!-- ERROR / FALLBACK -->
+  <div class="screen" id="screen-fallback">
+    <div class="eyebrow">情災チェック / JOUSAI CHECK</div>
+    <div class="card">
+      <h1>空模様の確認ができませんでした</h1>
+      <p class="lead">気象情報がうまく取得できませんでした。<br>念のため、今のあなたを教えてください。</p>
+      <div class="choices">
+        <button class="choice-btn" id="fallback-continue">セルフチェックをする →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="screen" id="screen-q1">
+    <div class="eyebrow">情災チェック / JOUSAI CHECK</div>
+    <div class="card">
+      <div class="dots"><span class="dot on"></span><span class="dot"></span><span class="dot"></span></div>
+      <h2>ゆうべは、眠れましたか？</h2>
+      <p class="lead" style="text-align:left; margin-bottom:22px;">今のあなたを、そのまま教えてください。</p>
+      <div class="choices">
+        <button class="choice-btn" data-q="0" data-v="0">よく眠れた</button>
+        <button class="choice-btn" data-q="0" data-v="1">あまり眠れなかった</button>
+        <button class="choice-btn" data-q="0" data-v="2">ほとんど眠れなかった</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="screen" id="screen-q2">
+    <div class="eyebrow">情災チェック / JOUSAI CHECK</div>
+    <div class="card">
+      <div class="dots"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span></div>
+      <h2>そわそわしたり、不安な気持ちはありますか？</h2>
+      <div class="choices">
+        <button class="choice-btn" data-q="1" data-v="0">とくにない</button>
+        <button class="choice-btn" data-q="1" data-v="1">少しある</button>
+        <button class="choice-btn" data-q="1" data-v="2">かなりある</button>
+      </div>
+      <a class="back-link" href="#" data-back="screen-q1">← ひとつ前に戻る</a>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="screen" id="screen-q3">
+    <div class="eyebrow">情災チェック / JOUSAI CHECK</div>
+    <div class="card">
+      <div class="dots"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></div>
+      <h2>心や体が、しんどいと感じますか？</h2>
+      <div class="choices">
+        <button class="choice-btn" data-q="2" data-v="0">感じない</button>
+        <button class="choice-btn" data-q="2" data-v="1">少し感じる</button>
+        <button class="choice-btn" data-q="2" data-v="2">かなり感じる</button>
+      </div>
+      <a class="back-link" href="#" data-back="screen-q2">← ひとつ前に戻る</a>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="screen-result">
+    <div class="eyebrow">情災チェック / JOUSAI CHECK</div>
+    <div class="card">
+      <span class="result-tag" id="result-tag">RESULT</span>
+      <h1 style="text-align:left;" id="result-title"></h1>
+      <p class="result-message" id="result-message"></p>
+
+      <div class="care-box" id="care-template" style="display:none;">
+        <h3>🕊️ 休みたいときの、ひとこと文例</h3>
+        <p>そのままコピーして、伝えるときに使ってください。</p>
+        <div class="template-box" id="template-text"></div>
+        <button class="copy-btn" id="copy-btn">文例をコピーする</button>
+      </div>
+
+      <div class="care-box" id="care-contacts" style="display:none;">
+        <h3>🤍 話してみたい方へ</h3>
+        <ul>
+          <li><a href="tel:0120279338">よりそいホットライン</a>（0120-279-338 / 24時間・無料）</li>
+          <li><a href="tel:0570064556">こころの健康相談統一ダイヤル</a>（0570-064-556）</li>
+          <li>身近な人、職場や学校の窓口に「情災っぽいかも」と伝えてみるのも、ひとつの方法です。</li>
+        </ul>
+      </div>
+
+      <a class="restart-link" href="#" id="restart-link">もう一度チェックする</a>
+      <p class="disclaimer">※本ツールは医学的な診断を行うものではありません。心身の不調が続く場合は、医療機関や専門機関にご相談ください。</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var JMA_URL = 'https://www.jma.go.jp/bosai/warning/data/warning/230000.json';
+  var NAGOYA_AREA_CODE = '230010'; // 名古屋市（気象庁エリアコード）
+  var answers = [null, null, null];
+
+  var screens = {};
+  document.querySelectorAll('.screen').forEach(function (el) { screens[el.id] = el; });
+
+  function show(id) {
+    Object.keys(screens).forEach(function (k) { screens[k].classList.remove('active'); });
+    screens[id].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function hasActiveWarning(entry) {
+    return (entry.warnings || []).some(function (w) {
+      return w.status && w.status.indexOf('発表') === 0 && w.status.indexOf('はなし') === -1;
+    });
+  }
+
+  function checkWeather() {
+    var controller = new AbortController();
+    var timeout = setTimeout(function () { controller.abort(); }, 6000);
+
+    fetch(JMA_URL, { cache: 'no-store', signal: controller.signal })
+      .then(function (res) {
+        clearTimeout(timeout);
+        if (!res.ok) throw new Error('bad response');
+        return res.json();
+      })
+      .then(function (data) {
+        // 名古屋市（エリアコード 230010）のデータだけを見て判定する。
+        // 愛知県全体で見てしまうと、県内どこかの市町村の些細な注意報にも
+        // 反応してしまい、名古屋が平常でもチェックに飛んでしまうため。
+        var nagoyaEntry = null;
+        (data.areaTypes || []).forEach(function (at) {
+          (at.areas || []).forEach(function (a) {
+            var code = a.area && a.area.code;
+            if (code === NAGOYA_AREA_CODE) nagoyaEntry = a;
+          });
+        });
+
+        if (!nagoyaEntry) {
+          // 名古屋市のデータ構造が見つからない = 確証を持って判定できない
+          show('screen-fallback');
+          return;
+        }
+
+        if (hasActiveWarning(nagoyaEntry)) {
+          show('screen-q1');
+        } else {
+          show('screen-safe');
+        }
+      })
+      .catch(function () {
+        clearTimeout(timeout);
+        show('screen-fallback');
+      });
+  }
+
+  checkWeather();
+
+  document.getElementById('manual-check-link').addEventListener('click', function (e) {
+    e.preventDefault();
+    show('screen-q1');
+  });
+  document.getElementById('fallback-continue').addEventListener('click', function () {
+    show('screen-q1');
+  });
+
+  document.querySelectorAll('[data-back]').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      show(el.getAttribute('data-back'));
+    });
+  });
+
+  document.querySelectorAll('.choice-btn[data-q]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var q = parseInt(btn.getAttribute('data-q'), 10);
+      var v = parseInt(btn.getAttribute('data-v'), 10);
+      answers[q] = v;
+      if (q === 0) show('screen-q2');
+      else if (q === 1) show('screen-q3');
+      else finish();
+    });
+  });
+
+  function finish() {
+    var score = answers.reduce(function (a, b) { return a + (b || 0); }, 0); // 0-6
+    var tag, title, message, showCare, showContacts;
+
+    if (score <= 1) {
+      tag = 'LOW';
+      title = '今のあなたは、わりと穏やかです';
+      message = '大きな乱れは見られません。ただ、警報が出ている間は、いつもより少しだけ自分に注意を向けてあげてください。無理のない範囲で、水分・睡眠・安全な場所の確保を。';
+      showCare = false; showContacts = false;
+    } else if (score <= 4) {
+      tag = 'MID';
+      title = '少し、情災状態かもしれません';
+      message = '天気や状況の変化が、知らないうちに心や体に負担をかけているようです。がんばりすぎなくて大丈夫。今日は「ちゃんとやる」より「無理をしない」を優先してみてください。';
+      showCare = true; showContacts = false;
+    } else {
+      tag = 'HIGH';
+      title = 'かなり、情災状態にあるようです';
+      message = 'いま感じているしんどさは、あなたの弱さではなく、天候や状況が引き起こしている自然な反応です。責めなくて大丈夫。今日は、休むという選択をしてもいい日です。';
+      showCare = true; showContacts = true;
+    }
+
+    document.getElementById('result-tag').textContent = tag + ' ／ 情災スコア ' + score + ' / 6';
+    document.getElementById('result-title').textContent = title;
+    document.getElementById('result-message').textContent = message;
+
+    document.getElementById('care-template').style.display = showCare ? 'block' : 'none';
+    document.getElementById('care-contacts').style.display = showContacts ? 'block' : 'none';
+
+    if (showCare) {
+      document.getElementById('template-text').textContent =
+        'ご報告です。\n現在、気象警報の影響もあり心身がすぐれないため、本日は体調を整えることを優先させてください。\n必要なご連絡は改めていたします。ご迷惑をおかけしますが、よろしくお願いいたします。';
+    }
+
+    show('screen-result');
+  }
+
+  document.getElementById('copy-btn').addEventListener('click', function () {
+    var text = document.getElementById('template-text').textContent;
+    var btn = this;
+    function done() {
+      btn.textContent = 'コピーしました ✓';
+      btn.classList.add('copied');
+      setTimeout(function () {
+        btn.textContent = '文例をコピーする';
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(done);
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      done();
+    }
+  });
+
+  document.getElementById('restart-link').addEventListener('click', function (e) {
+    e.preventDefault();
+    answers = [null, null, null];
+    show('screen-loading');
+    checkWeather();
+  });
+})();
+</script>
+
+</body>
+</html>
