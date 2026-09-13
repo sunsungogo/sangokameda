@@ -420,7 +420,12 @@
 <script>
 (function () {
   var JMA_URL = 'https://www.jma.go.jp/bosai/warning/data/warning/230000.json';
-  var NAGOYA_AREA_CODE = '230010'; // 名古屋市（気象庁エリアコード）
+  // 名古屋市は単一コードではなく、市内10区グループのコードに分かれて配信される
+  // （気象庁 area.json の "230010"（名古屋市）の children に一致）。
+  var NAGOYA_WARD_CODES = [
+    '2310000', '2320400', '2320600', '2321500', '2321900',
+    '2322600', '2322900', '2323000', '2323800', '2330200'
+  ];
   var answers = [null, null, null];
 
   var screens = {};
@@ -449,30 +454,27 @@
         return res.json();
       })
       .then(function (data) {
-        // 名古屋市（エリアコード 230010）のデータだけを見て判定する。
-        // 愛知県全体で見てしまうと、県内どこかの市町村の些細な注意報にも
-        // 反応してしまい、名古屋が平常でもチェックに飛んでしまうため。
-        var nagoyaEntry = null;
-        var allCodes = [];
+        // 名古屋市を構成する10区グループのうち、どれかひとつでも
+        // 警報・注意報が「発表」されていれば、名古屋市に影響ありとみなす。
+        var nagoyaEntries = [];
         (data.areaTypes || []).forEach(function (at) {
           (at.areas || []).forEach(function (a) {
-            var code = a.area && a.area.code;
-            if (code) allCodes.push(code);
-            if (code === NAGOYA_AREA_CODE) nagoyaEntry = a;
+            if (a && NAGOYA_WARD_CODES.indexOf(a.code) !== -1) {
+              nagoyaEntries.push(a);
+            }
           });
         });
 
-        if (!nagoyaEntry) {
-          // 名古屋市のデータ構造が見つからない = 確証を持って判定できない。
-          // デバッグ用に、実際のJSON構造を文字列でそのまま出す（コピペしやすいように）。
-          console.warn('[情災チェック] 名古屋市コード(' + NAGOYA_AREA_CODE + ')が見つかりませんでした。取得できたエリアコード一覧:', allCodes);
-          console.warn('[情災チェック] areaTypes[0]の生JSON:\n' + JSON.stringify(data.areaTypes && data.areaTypes[0], null, 2));
-          console.warn('[情災チェック] areaTypes[1]の生JSON:\n' + JSON.stringify(data.areaTypes && data.areaTypes[1], null, 2));
+        if (nagoyaEntries.length === 0) {
+          // 名古屋市のデータ自体が見つからない = 確証を持って判定できない。
+          console.warn('[情災チェック] 名古屋市の区グループコードが見つかりませんでした。');
+          console.warn('[情災チェック] 取得したJSON全体:\n' + JSON.stringify(data, null, 2));
           show('screen-fallback');
           return;
         }
 
-        if (hasActiveWarning(nagoyaEntry)) {
+        var nagoyaHasWarning = nagoyaEntries.some(hasActiveWarning);
+        if (nagoyaHasWarning) {
           show('screen-q1');
         } else {
           show('screen-safe');
