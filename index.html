@@ -692,8 +692,13 @@
       <div class="news-bar">
         <span class="news-bar-label">UPDATES</span>
         <!-- 新しいものを先頭に。最新3件が表示される。古いものは削除してOK -->
-        <a href="jousai.html" class="news-item">
+        <a href="jousai2.html" class="news-item">
           <span class="news-badge">NEW</span>
+          <span class="news-item-text">第2回「情災を受けた人に、社会は何ができるか」を公開しました</span>
+          <span class="news-item-date">2026.09.14</span>
+        </a>
+        <a href="jousai.html" class="news-item">
+          <span class="news-badge-spacer"></span>
           <span class="news-item-text">情災（じょうさい）を公開しました</span>
           <span class="news-item-date">2026.09.11</span>
         </a>
@@ -701,11 +706,6 @@
           <span class="news-badge-spacer"></span>
           <span class="news-item-text">Habitus Sync リリース</span>
           <span class="news-item-date">2026.08.06</span>
-        </a>
-        <a href="log.html" class="news-item">
-          <span class="news-badge-spacer"></span>
-          <span class="news-item-text">思考ログ 更新中</span>
-          <span class="news-item-date">2026.06</span>
         </a>
       </div>
     </div>
@@ -765,6 +765,13 @@
             <line x1="220" y1="90" x2="150" y2="130" stroke="#ddd" stroke-width="1"/>
           </g>
         </svg>
+      </div>
+
+      <div class="project-card" style="cursor:pointer;" onclick="window.location='jousai-check.html'">
+        <p class="project-tag">ツール / PoC</p>
+        <h2>情災チェック</h2>
+        <p>気象警報が出ているとき、今のあなたの状態をそっと確認するセルフチェック。「情災（じょうさい）」という考え方を、実際に使えるツールにしてみた。</p>
+        <span class="project-status active">試してみる →</span>
       </div>
 
       <div class="project-card" style="cursor:pointer;" onclick="window.location='ws_romance.html'">
@@ -910,9 +917,15 @@
       <div style="display:grid; gap:0;">
 
         <div style="display:grid; grid-template-columns:140px 1fr auto; gap:24px; align-items:baseline; padding:18px 0; border-bottom:1px solid var(--line);">
+          <span style="font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:0.1em;">2026.09.14</span>
+          <span style="font-size:14px;">第2回「情災を受けた人に、社会は何ができるか」を公開しました</span>
+          <span style="font-family:var(--mono); font-size:10px; color:var(--accent);">NEW</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:140px 1fr auto; gap:24px; align-items:baseline; padding:18px 0; border-bottom:1px solid var(--line);">
           <span style="font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:0.1em;">2026.09.11</span>
           <span style="font-size:14px;">情災（じょうさい）を公開しました</span>
-          <span style="font-family:var(--mono); font-size:10px; color:var(--accent);">NEW</span>
+          <span style="font-family:var(--mono); font-size:10px; color:var(--muted);">—</span>
         </div>
 
         <div style="display:grid; grid-template-columns:140px 1fr auto; gap:24px; align-items:baseline; padding:18px 0; border-bottom:1px solid var(--line);">
@@ -979,13 +992,13 @@
 
       <div style="display:grid; gap:1px; background:var(--line); border:1px solid var(--line); margin-bottom:32px;">
 
-        <a href="jousai-check.html" style="text-decoration:none; color:var(--fg); background:var(--bg); padding:32px; display:block; transition:background 0.2s;" onmouseover="this.style.background='#fff'" onmouseout="this.style.background='var(--bg)'">
+        <a href="jousai2.html" style="text-decoration:none; color:var(--fg); background:var(--bg); padding:32px; display:block; transition:background 0.2s;" onmouseover="this.style.background='#fff'" onmouseout="this.style.background='var(--bg)'">
           <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;">
-            <span style="font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:0.1em;">2026.09.13</span>
-            <span style="font-family:var(--mono); font-size:9px; color:var(--accent); letter-spacing:0.15em; border:1px solid var(--accent-light); padding:3px 8px;">PoC</span>
+            <span style="font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:0.1em;">2026.09.14</span>
+            <span style="font-family:var(--mono); font-size:9px; color:var(--accent); letter-spacing:0.15em; border:1px solid var(--accent-light); padding:3px 8px;">提言・第2回</span>
           </div>
-          <h2 style="font-family:var(--serif); font-size:18px; font-weight:700; margin-bottom:12px; line-height:1.4;">情災チェック</h2>
-          <p style="font-size:13px; color:var(--muted); line-height:1.8;">気象警報が出ているとき、今のあなたの状態をそっと確認するセルフチェック。「情災（じょうさい）」という考え方を、実際に使えるツールにしてみた。</p>
+          <h2 style="font-family:var(--serif); font-size:18px; font-weight:700; margin-bottom:12px; line-height:1.4;">情災を受けた人に、社会は何ができるか</h2>
+          <p style="font-size:13px; color:var(--muted); line-height:1.8;">「情災」に名前をつけた、その先。今出来るケアモデルと、10年後に訪れるかもしれないケアモデルを提案する第2回。</p>
         </a>
 
         <a href="jousai.html" style="text-decoration:none; color:var(--fg); background:var(--bg); padding:32px; display:block; transition:background 0.2s;" onmouseover="this.style.background='#fff'" onmouseout="this.style.background='var(--bg)'">
