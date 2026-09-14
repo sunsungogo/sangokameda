@@ -439,6 +439,32 @@
     padding-left: 0;
   }
 
+  /* Series nav (第1回/第2回) */
+  .series-nav {
+    margin-top: 40px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .series-nav .series-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+  .series-nav a {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .series-nav a:hover { opacity: 0.7; }
+
   /* Call to action at bottom */
   .cta-note {
     margin-top: 40px;
@@ -513,7 +539,8 @@
   <nav>
     <div class="nav-inner">
       <a href="index.html">← home</a>
-      <a href="#" class="current">情災</a>
+      <a href="#" class="current">第1回</a>
+      <a href="jousai2.html">第2回</a>
     </div>
   </nav>
 
@@ -691,6 +718,11 @@
         <li>サイコロジカル・ファーストエイド（PFA）</li>
         <li>心理的回復フェーズモデル（厚生労働省・各都道府県ガイドライン）</li>
       </ul>
+      <div class="series-nav">
+        <span class="series-label">続きを読む →</span>
+        <a href="jousai2.html">第2回：情災を受けた人に、社会は何ができるか</a>
+      </div>
+
       <div class="cta-note">
         この概念は提案段階のものです。<br>
         <strong>「情災」という言葉に共感した方</strong>、同じ経験をした方の声を聞かせてください。
