@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>情災を受けた人に、社会は何ができるか（第2回）— 亀田山瑚</title>
+<meta name="description" content="現在出来るケアモデル、今後の社会に訪れるケアモデルの提案。「情災」の続編として、社会が今できること、10年後にできることを考える">
+<meta name="author" content="亀田山瑚">
+<meta name="keywords" content="情災, じょうさい, ケアモデル, 感情的被害, 災害, 心理学, 防災, 亀田山瑚, Sango Kameda">
+<link rel="canonical" href="https://sangokameda.com/jousai2.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="情災を受けた人に、社会は何ができるか（第2回）— 亀田山瑚">
+<meta property="og:description" content="現在出来るケアモデル、今後の社会に訪れるケアモデルの提案。「情災」の続編。">
+<meta property="og:url" content="https://sangokameda.com/jousai2.html">
+<meta property="og:site_name" content="亀田山瑚">
+<meta property="og:image" content="https://sangokameda.com/og-image.png">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sangokameda.com/og-image.png">
+<meta name="twitter:title" content="情災を受けた人に、社会は何ができるか（第2回）— 亀田山瑚">
+<meta name="twitter:description" content="現在出来るケアモデル、今後の社会に訪れるケアモデルの提案。「情災」の続編。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  /* ── Token system ── */
+  :root {
+    --bg:           #f5f3f0;
+    --fg:           #111;
+    --muted:        #888;
+    --accent:       #E8472A;
+    --accent-light: #fce0d8;
+    --accent-dim:   rgba(232,71,42,0.08);
+    --line:         #ddd;
+    --surface:      #efede9;
+    --mono:   'DM Mono', monospace;
+    --serif:  'Shippori Mincho', serif;
+    --sans:   'Noto Sans JP', sans-serif;
+  }
+
+  /* ライト固定（sangokameda.comに合わせて） */
+
+  /* ── Reset ── */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-weight: 300;
+    overflow-x: hidden;
+    padding-inline: 0;
+  }
+
+  /* ── Canvas ── */
+  #network-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.15;
+  }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 720px;
+    margin-inline: auto;
+    padding-inline: 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ── */
+  header {
+    padding-block: 80px 60px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.1s;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(34px, 6.4vw, 60px);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+
+  .h1-reading {
+    display: block;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 8px;
+    text-transform: lowercase;
+  }
+
+  .tagline {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 24px;
+    line-height: 1.9;
+    max-width: 520px;
+    border-left: 2px solid var(--accent);
+    padding-left: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.35s;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Nav ── */
+  nav {
+    padding-block: 20px;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: rgba(245,243,240,0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+
+  /* ライト固定 — ダークオーバーライドなし */
+
+  .nav-inner {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+
+  nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--accent); }
+  nav a.current { color: var(--accent); }
+
+  /* ── Article ── */
+  .article-body {
+    padding-block: 80px 60px;
+  }
+
+  /* Section label */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  /* Each article section */
+  .article-section {
+    padding-block: 56px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 0 32px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .article-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    padding-top: 6px;
+    text-align: right;
+    padding-right: 0;
+    line-height: 1.6;
+  }
+
+  .section-content {}
+
+  .section-content h2 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+    margin-bottom: 28px;
+  }
+
+  .section-content h3 {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 700;
+    margin-block: 28px 12px;
+    letter-spacing: 0.01em;
+  }
+
+  .section-content p {
+    font-size: 14.5px;
+    line-height: 2.05;
+    color: var(--fg);
+    margin-bottom: 1.5em;
+    max-width: 62ch;
+  }
+  .section-content p:last-child { margin-bottom: 0; }
+
+  .section-content ul {
+    margin-block: 16px;
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
+  }
+  .section-content ul li {
+    font-size: 14.5px;
+    line-height: 2;
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+  .section-content ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+
+  /* Phase flow diagram */
+  .phase-flow {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 24px 28px;
+    margin-block: 24px;
+    font-size: 13px;
+    line-height: 2.2;
+    color: var(--fg);
+  }
+  .phase-flow .phase-item {
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+  }
+  .phase-flow .phase-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    min-width: 72px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .phase-flow .phase-text {
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: var(--fg);
+  }
+  .phase-flow .phase-arrow {
+    text-align: left;
+    padding-left: 72px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    padding-block: 2px;
+  }
+
+  /* Harm types — two-col grid */
+  .harm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-block: 24px;
+  }
+  .harm-card {
+    border: 1px solid var(--line);
+    padding: 20px;
+  }
+  .harm-card .harm-type {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .harm-card p {
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--fg);
+    margin: 0;
+    max-width: none;
+  }
+
+  /* Key definition highlight */
+  .definition-block {
+    background: var(--accent-dim);
+    border-left: 3px solid var(--accent);
+    padding: 28px 32px;
+    margin-block: 32px;
+  }
+  .definition-block .def-term {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .definition-block .def-reading {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 20px;
+  }
+  .definition-block p {
+    font-size: 14px;
+    line-height: 2;
+    color: var(--fg);
+    max-width: none;
+    margin: 0;
+  }
+
+  /* Usage examples */
+  .usage-examples {
+    margin-block: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .usage-ex {
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--fg);
+    padding: 12px 20px;
+    background: var(--surface);
+    border-left: 2px solid var(--line);
+  }
+
+  /* Afterword */
+  .afterword {
+    padding-block: 56px;
+    border-top: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .afterword.visible { opacity: 1; transform: translateY(0); }
+
+  .afterword-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .afterword-text {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 2.1;
+    color: var(--muted);
+    font-style: italic;
+    max-width: 58ch;
+    padding-left: 88px;
+  }
+  .afterword-text p { margin-bottom: 1.5em; }
+  .afterword-text p:last-child { margin-bottom: 0; }
+
+  /* References */
+  .references {
+    padding-block: 48px;
+    border-top: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .references.visible { opacity: 1; transform: translateY(0); }
+
+  .ref-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: block;
+  }
+  .ref-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ref-list li {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--muted);
+    list-style: none;
+    padding-left: 0;
+  }
+  .ref-list a { color: var(--accent); }
+
+  /* Call to action at bottom */
+  .cta-note {
+    margin-top: 40px;
+    padding: 20px 24px;
+    border: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .cta-note strong {
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--line);
+    padding-block: 40px;
+  }
+  footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .container { padding-inline: 24px; }
+
+    .article-section {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .section-num {
+      text-align: left;
+      padding-top: 0;
+    }
+    .afterword-text { padding-left: 0; }
+    .harm-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article-section, .afterword, .references {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    header .eyebrow, header h1, header .tagline {
+      opacity: 1;
+      animation: none;
+    }
+  }
+
+  /* Care layers (3層) */
+  .layer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-block: 24px;
+  }
+  .layer-card {
+    border: 1px solid var(--line);
+    padding: 22px 24px;
+  }
+  .layer-card .layer-num {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .layer-card h3 {
+    font-family: var(--serif);
+    font-size: 16.5px;
+    font-weight: 700;
+    margin: 0 0 10px;
+  }
+  .layer-card p {
+    font-size: 13.5px;
+    line-height: 1.95;
+    color: var(--fg);
+    margin: 0 0 0.8em;
+    max-width: none;
+  }
+  .layer-card p:last-child { margin-bottom: 0; }
+
+  /* Model figure (SVG) */
+  .model-figure {
+    margin-block: 28px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    padding: 16px;
+  }
+  .model-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .model-caption {
+    font-size: 12px;
+    line-height: 1.9;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 14px;
+    max-width: 60ch;
+    margin-inline: auto;
+  }
+
+  /* Tool CTA */
+  .cta-box {
+    margin-block: 28px;
+    padding: 28px;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-light);
+    text-align: center;
+  }
+  .cta-box p {
+    max-width: none;
+    margin-bottom: 20px !important;
+  }
+  .cta-button {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--accent);
+    text-decoration: none;
+    padding: 14px 32px;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
+  }
+  .cta-button:hover { opacity: 0.85; }
+
+  /* Series nav (第1回/第2回) */
+  .series-nav {
+    margin-top: 40px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .series-nav .series-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+  .series-nav a {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .series-nav a:hover { opacity: 0.7; }
+
+  @media (max-width: 640px) {
+    .cta-box { padding: 22px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="network-canvas"></canvas>
+
+<div class="container">
+
+  <header>
+    <p class="eyebrow">Sango Kameda — Essay / 2026.09 / Part 2</p>
+    <h1>情災を受けた人に、<br>社会は何ができるか<span class="h1-reading">jousai — part 2</span></h1>
+    <p class="tagline">現在出来るケアモデル、今後の社会に訪れるケアモデルの提案</p>
+  </header>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html">← home</a>
+      <a href="jousai.html">第1回</a>
+      <a href="#" class="current">第2回</a>
+    </div>
+  </nav>
+
+  <article class="article-body">
+
+    <p class="section-label">ケア提案</p>
+
+    <!-- はじめに -->
+    <section class="article-section">
+      <div class="section-num">intro</div>
+      <div class="section-content">
+        <h2>はじめに</h2>
+        <p>前回、「情災（じょうさい）」という概念を提案した。</p>
+        <p>物理的な被害が小さくても、災害によって感情・心理面で被災する状態のことだ。家が流されたわけでも、怪我をしたわけでもない。それでも眠れない。不安が消えない。そして翌朝、「動けるなら来るべき」という空気の中で出勤する。</p>
+        <p>そして、自分自身が情災を経験した当事者として、言葉にすること、立ち位置を見ることで少し楽になれた気がした。</p>
+        <p>同時に、書いた後に残ったのは別の問いと責任だった。</p>
+        <p>「情災」に名前をつけた。では、社会は何をすればいいのか？</p>
+        <p>今回はその続きを考えたい。</p>
+      </div>
+    </section>
+
+    <!-- 1. ふりかえり -->
+    <section class="article-section">
+      <div class="section-num">1</div>
+      <div class="section-content">
+        <h2>ふりかえり</h2>
+        <p>前回の記事で整理したことを、簡単に振り返っておく。</p>
+        <p>災害後の心理的回復モデル（林春男, 2003）は、大規模災害を前提に設計されている。「非日常が続く」ことを前提としたフェーズモデルだ。</p>
+        <p>でも「小さな被災」の場合、そのモデルは当てはまらない。</p>
+
+        <div class="phase-flow">
+          <div class="phase-item">
+            <span class="phase-label">発災当日</span>
+            <span class="phase-text">恐怖・緊張・混乱</span>
+          </div>
+          <div class="phase-arrow">↓</div>
+          <div class="phase-item">
+            <span class="phase-label">翌日</span>
+            <span class="phase-text">「動けるなら日常に戻れ」</span>
+          </div>
+          <div class="phase-arrow">↓</div>
+          <div class="phase-item">
+            <span class="phase-label">乖離</span>
+            <span class="phase-text">心はまだフェーズ0にいるのに、身体だけが日常モードを求められる</span>
+          </div>
+        </div>
+
+        <p>このギャップが、情災の核心だ。そしてこのギャップを指す言葉が、今の社会にはない。</p>
+        <p>だから声を上げられない。だから「大げさ」で終わる。だから少し休むだけで回復するはずの傷が深くなる。</p>
+        <p>そんな構造を前回明らかにした。</p>
+      </div>
+    </section>
+
+    <!-- 2. では、何が必要なのか -->
+    <section class="article-section">
+      <div class="section-num">2</div>
+      <div class="section-content">
+        <h2>では、何が必要なのか</h2>
+        <p>当事者の一人としてケア手法を考えると、必要なケアは大きく3つの層に整理できる。</p>
+
+        <div class="layer-list">
+          <div class="layer-card">
+            <span class="layer-num">layer 01</span>
+            <h3>① 理解してくれる存在</h3>
+            <p>「大したことないでしょ」ではなく、「それは情災かもしれないね」と言える人がいること。それは人でも、制度でも、ツールでもいい。</p>
+            <p>まず「あなたの状態は、おかしくない」と伝えてくれる存在が必要だ。</p>
+          </div>
+          <div class="layer-card">
+            <span class="layer-num">layer 02</span>
+            <h3>② 特例の休み及びその制度</h3>
+            <p>「証明できないと休めない」という構造を変える必要がある。気象警報が出た翌日は、申請不要で休める、歩みを止められる、確認が心理的にも入る。そういう文化・制度があるだけで、どれだけ違うだろう。</p>
+            <p>動ける状態でも、動かなくていい選択肢がある社会になることもまた理想なのではないか。</p>
+          </div>
+          <div class="layer-card">
+            <span class="layer-num">layer 03</span>
+            <h3>③ 段階的な日常復帰</h3>
+            <p>いきなり「通常モード」に戻すのではなく、フェーズを踏む仕組みが必要だ。</p>
+            <p>「今日は半日でいい」「今週は定時で帰っていい」そういう小さな調整が出来る環境が、情災からの回復を支える。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 今できること、10年後にできること -->
+    <section class="article-section">
+      <div class="section-num">3</div>
+      <div class="section-content">
+        <h2>今できること、10年後にできること</h2>
+
+        <h3>今できること（事前設計型）</h3>
+        <p>情災への対応は、「しんどくなってから考える」では難しい。</p>
+        <ul>
+          <li>気象警報が出たら自動的に選択肢が生まれる仕組み</li>
+          <li>「被害がなくても休んでいい」という文化を平時から作る</li>
+          <li>上司や同僚が「大丈夫だった？今日休む？」と先に声をかける文化</li>
+        </ul>
+        <p>どれも、今すぐできることだろう。</p>
+
+        <h3>未来のケアモデル（他者検知型）</h3>
+        <p>上記のできることは他者を巻き込む。他者は私たちの言う通りに動くわけがないからこそ、より高度な未来のモデルが必要だ。</p>
+        <p>すなわち、身体データや普段の心身データ取得が社会の当たり前になったとき、もう一段先のケアが可能になる。</p>
+
+        <div class="phase-flow">
+          <div class="phase-item">
+            <span class="phase-label">平時</span>
+            <span class="phase-text">身体データを自動センシング（HRV・睡眠スコア） × 気象データ（災害イベント検知）</span>
+          </div>
+          <div class="phase-arrow">↓</div>
+          <div class="phase-item">
+            <span class="phase-label">検知</span>
+            <span class="phase-text">「あなた、今情災状態かもしれません」と通知</span>
+          </div>
+          <div class="phase-arrow">↓</div>
+          <div class="phase-item">
+            <span class="phase-label">連携</span>
+            <span class="phase-text">本人への休暇提案・職場・自治体への連携</span>
+          </div>
+          <div class="phase-arrow">↓</div>
+          <div class="phase-item">
+            <span class="phase-label">回復</span>
+            <span class="phase-text">段階的な日常復帰プログラム</span>
+          </div>
+        </div>
+
+        <p>大事なのは、本人が声を上げなくていい設計であることだ。情災の難しさは、しんどい状態のときこそ、助けを求めるのが難しいところにある。だから、「誰かが≒自身を観察している存在が、先に気づく」仕組みが必要になる。</p>
+      </div>
+    </section>
+
+    <!-- 4. 情災ケアモデル図 -->
+    <section class="article-section">
+      <div class="section-num">4</div>
+      <div class="section-content">
+        <h2>情災ケアモデル図</h2>
+
+        <div class="model-figure">
+          <img src="jousai-care-model.svg" alt="情災ケアモデル図：行政・自治体と個人デバイスからの情報が情災スコア算出に集まり、職場・企業と情報共有しながら本人への通知・ケア案内、回復モニタリングを経て段階的回復に至る一連の流れを示した図">
+        </div>
+
+        <p>行政・自治体からの気象情報と、個人デバイスの身体データが掛け合わさることで情災スコアが算出される。スコアは本人への通知・ケア案内に使われると同時に、職場・行政へリアルタイムでフィードバックされる。回復状況も双方向で共有され、段階的な日常復帰を支援する。</p>
+      </div>
+    </section>
+
+    <!-- 5. 情災チェックという小さな第一歩 -->
+    <section class="article-section">
+      <div class="section-num">5</div>
+      <div class="section-content">
+        <h2>「情災チェック」という小さな第一歩</h2>
+        <p>理想モデルはまだ、遠い。技術的にも多くの努力が完成には必要だろう。</p>
+        <p>でも今すぐできることがある。</p>
+        <p>気象警報が出ているとき、自分の状態を3問でセルフチェックできるツールを作った。</p>
+
+        <div class="usage-examples">
+          <div class="usage-ex">「ゆうべは、眠れましたか？」</div>
+          <div class="usage-ex">「そわそわしたり、不安な気持ちはありますか？」</div>
+          <div class="usage-ex">「心や体が、しんどいと感じますか？」</div>
+        </div>
+
+        <p>たったこれだけだ。でも、「自分は今、情災状態かもしれない」と気づくだけで、少しだけ自分を大切にできるかもしれない。少しだけ、休む勇気が持てるかもしれない。</p>
+
+        <div class="cta-box">
+          <p>ツールはこちらから体験出来るので、もし気になったら体験してみてほしい。お住いの都道府県と3つの質問に答えるだけだ。</p>
+          <a class="cta-button" href="jousai-check.html">情災チェックを使ってみる →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- おわりに -->
+    <div class="afterword">
+      <span class="afterword-label">おわりに — あとがき</span>
+      <div class="afterword-text">
+        <p>社会の何かを批判する時は、提案が必要だ。モデルが必要だ。理想が必要だ。</p>
+        <p>今回の投稿は、その責任を果たす投稿であろう。このモデルはきっと不完全だし、改善の余地がある。上司や周りが支えてくれている会社自体、もしかしたら情災支援をモデルにする必要もないかもしれない。企業にいる人間は必要だからこそいると考えると、これもまたジレンマである。</p>
+        <p>そして、これを読んだ君がまた議論するとき、君もまたモデルの提案をしてくれるよう、私は強く望んでいる。</p>
+        <p>P.S：前回の投稿でリアクションしてくれたすべての人に感謝を届けたい。どのリアクションも大事なことだと思う。ありがとう。</p>
+      </div>
+    </div>
+
+    <!-- References -->
+    <div class="references">
+      <span class="ref-label">参考</span>
+      <ul class="ref-list">
+        <li><a href="jousai.html">第1回：「情災（じょうさい）」という概念を提案したい</a></li>
+        <li>林春男（2003）『いのちを守る地震防災学』岩波書店</li>
+        <li>Disaster Invisibility Framework（2024, ScienceDirect）</li>
+        <li>心理的回復フェーズモデル（厚生労働省・各都道府県ガイドライン）</li>
+      </ul>
+
+      <div class="series-nav">
+        <span class="series-label">← 続けて読む</span>
+        <a href="jousai.html">第1回：情災（じょうさい）を読む</a>
+      </div>
+
+      <div class="cta-note">
+        この概念は、まだ提案段階のものです。<br>
+        <strong>「情災」という言葉に共感した方</strong>、同じ経験をした方の声を聞かせてください。
+      </div>
+    </div>
+
+  </article>
+
+  <footer>
+    <p><a href="index.html">← sangokameda.com</a> &nbsp;/&nbsp; © 2026 Sango Kameda</p>
+  </footer>
+
+</div>
+
+<script>
+/* Network canvas — same as main site */
+const canvas = document.getElementById('network-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const nodes = [];
+const NODE_COUNT = 28;
+for (let i = 0; i < NODE_COUNT; i++) {
+  nodes.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    r: Math.random() * 3 + 1.5
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 160) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.strokeStyle = `rgba(232, 71, 42, ${(1 - dist / 160) * 0.4})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+    }
+  }
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232, 71, 42, 0.5)';
+    ctx.fill();
+  });
+  nodes.forEach(n => {
+    n.x += n.vx;
+    n.y += n.vy;
+    if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+    if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* Scroll reveal */
+const revealEls = document.querySelectorAll('.article-section, .afterword, .references');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.05 });
+revealEls.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
