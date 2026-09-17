@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Habitus — 亀田山瑚</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f3f0;
+    --fg: #111;
+    --muted: #888;
+    --accent: #E8472A;
+    --accent-light: #fce0d8;
+    --line: #ddd;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Noto Sans JP', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  #network-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.18;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.1s;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+
+  .tagline {
+    font-size: 14px;
+    color: #333;
+    margin-top: 20px;
+    line-height: 2;
+    max-width: 520px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+
+  .cta-row {
+    margin-top: 32px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.55s;
+  }
+
+  .btn {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    padding: 14px 28px;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid var(--fg);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .btn-primary:hover {
+    background: #c93a20;
+    border-color: #c93a20;
+  }
+
+  .btn-secondary {
+    color: var(--fg);
+  }
+
+  .btn-secondary:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  nav {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: rgba(245,243,240,0.95);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+
+  .nav-inner {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+
+  nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--accent); }
+  nav a.current { color: var(--accent); }
+
+  .section {
+    padding: 72px 0;
+    border-top: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .section h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 620px;
+  }
+
+  .section p {
+    font-size: 14px;
+    line-height: 2;
+    color: #333;
+    max-width: 620px;
+    margin-bottom: 1.2em;
+  }
+
+  .use-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .use-card {
+    border: 1px solid var(--line);
+    padding: 20px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #333;
+    background: rgba(255,255,255,0.4);
+  }
+
+  .use-card .use-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .timeline {
+    margin-top: 32px;
+  }
+
+  .tl-item {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 24px;
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .tl-item:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tl-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    padding-top: 2px;
+  }
+
+  .tl-text {
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: #333;
+  }
+
+  .tl-text strong {
+    font-weight: 700;
+    color: var(--fg);
+  }
+
+  .source-note {
+    margin-top: 28px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .source-note a {
+    color: var(--muted);
+    text-decoration: underline;
+  }
+
+  .source-note a:hover { color: var(--accent); }
+
+  /* CONTACT — 唯一、温度を上げるセクション */
+  .contact-section {
+    padding: 88px 0 96px;
+  }
+
+  .contact-card {
+    position: relative;
+    display: block;
+    padding: 44px 48px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(600px circle at var(--mx, 50%) var(--my, 0%), rgba(232,71,42,0.08), transparent 60%),
+      rgba(255,255,255,0.5);
+    text-decoration: none;
+    color: var(--fg);
+    overflow: hidden;
+    transition: border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+    isolation: isolate;
+  }
+
+  .contact-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(120deg, transparent, rgba(232,71,42,0.5), transparent);
+    background-size: 220% 100%;
+    background-position: -120% 0;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    transition: background-position 1.1s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .contact-card:hover {
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(17,17,17,0.08);
+  }
+
+  .contact-card:hover::before {
+    background-position: 120% 0;
+  }
+
+  .contact-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .contact-card h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    max-width: 480px;
+  }
+
+  .contact-card p {
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--muted);
+    max-width: 460px;
+  }
+
+  .contact-arrow-row {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--fg);
+  }
+
+  .contact-arrow {
+    display: inline-block;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .contact-card:hover .contact-arrow {
+    transform: translateX(8px);
+  }
+
+  @media (max-width: 640px) {
+    .contact-card { padding: 32px 24px; }
+  }
+
+  /* FLOATING CONTACT — ページのどこにいても手が届く */
+  .float-contact {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    background: var(--fg);
+    color: var(--bg);
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(17,17,17,0.18);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease, background 0.25s ease, box-shadow 0.25s ease;
+    pointer-events: none;
+  }
+
+  .float-contact.shown {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .float-contact:hover {
+    background: var(--accent);
+    box-shadow: 0 12px 32px rgba(232,71,42,0.3);
+  }
+
+  .float-contact .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    transition: background 0.25s ease;
+  }
+
+  .float-contact:hover .dot {
+    background: #fff;
+  }
+
+  @media (max-width: 640px) {
+    .float-contact {
+      right: 16px;
+      bottom: 16px;
+      padding: 12px 18px;
+      font-size: 11px;
+    }
+  }
+
+  .cta-block {
+    text-align: left;
+    padding-top: 0;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 40px 0;
+  }
+
+  footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  footer a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .container { padding: 0 24px; }
+    .use-grid { grid-template-columns: 1fr; }
+    .tl-item { grid-template-columns: 1fr; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="network-canvas"></canvas>
+
+<a href="contact.html" class="float-contact" id="float-contact">
+  <span class="dot"></span>
+  うちでも使ってみたい
+</a>
+
+<div class="container">
+
+  <header>
+    <p class="eyebrow">Tool — Habitus</p>
+    <h1>Habitus</h1>
+    <p class="tagline">名刺交換だけで終わってしまう出会いに、あと一言を。<br>QRでカードを交換すると、お互いの興味の重なりが見えてくる交流ツール。</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://sunsungogo.github.io/firstcontact-sync/" target="_blank" rel="noopener">Habitusを使ってみる →</a>
+      <a class="btn btn-secondary" href="index.html">← home</a>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html">home</a>
+      <a href="log.html">log</a>
+      <a href="#" class="current">habitus</a>
+    </div>
+  </nav>
+
+  <section class="section">
+    <p class="section-label">what</p>
+    <h2>「なんとなく話が続かなかった」を、構造の問題として捉え直す。</h2>
+    <p>交流会やイベントで名刺やSNSを交換したのに、その場限りで終わってしまう――そんな経験、誰しもあるはず。Habitusは、お互いの興味・関心をカードにしてQRで交換し、重なっている部分を自動で可視化するツール。「次に何を話せばいいか」が見えることで、初対面の会話がもう一歩深いところから始められる。</p>
+  </section>
+
+  <section class="section">
+    <p class="section-label">where to use</p>
+    <h2>こういう場で使える</h2>
+    <div class="use-grid">
+      <div class="use-card">
+        <span class="use-tag">MEETUP</span>
+        交流会・ミートアップの名刺交換タイム。話題探しに使える一手として。
+      </div>
+      <div class="use-card">
+        <span class="use-tag">WORKSHOP</span>
+        ワークショップやピッチイベントの休憩時間。初対面同士のアイスブレイクに。
+      </div>
+      <div class="use-card">
+        <span class="use-tag">COMMUNITY</span>
+        コミュニティの懇親会。メンバー同士の共通点を見つけるきっかけに。
+      </div>
+      <div class="use-card">
+        <span class="use-tag">CLASSROOM</span>
+        ゼミや授業のグループ分け前。お互いを知る最初の一歩として。
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="section-label">development log</p>
+    <h2>できるまでの記録</h2>
+    <p>名古屋大学の学生向け実験実装プログラム「IDEA STOA」で開発を進めてきたプロジェクト。「初対面同士が分かり合えるきっかけ」をどう作るか、試作と失敗を繰り返しながら形にしてきた。</p>
+    <div class="timeline">
+      <div class="tl-item">
+        <span class="tl-date">2026.02</span>
+        <p class="tl-text"><strong>A4の自己紹介シートを試作。</strong>紙一枚にまとめたことで会話は深まったが、情報量が多すぎて人によって書く内容の粒度がバラバラになる課題が見えた。</p>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">2026.03</span>
+        <p class="tl-text"><strong>感情の温度差を4象限（CORE / SWAMP / GARDEN / QUESTION）で捉える構造を発見。</strong>ここから「Habitus」という発想が生まれ、生成AI（Gemini）で共通点を自動可視化するデジタルツールへと進化した。</p>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">2026.04</span>
+        <p class="tl-text"><strong>実際にイベントを組んで検証したところ、参加者0人という結果に。</strong>ツールを作ることと、現場で実際に使われることの間にあるギャップを痛感。「言葉が難しい」「話題の選択肢が欲しい」というフィードバックをもらう。</p>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">現在</span>
+        <p class="tl-text">SNS連携で入力の手間を減らす方向と、コミュニティごとにデザインをチューニングする方向で改善中。</p>
+      </div>
+    </div>
+    <p class="source-note">開発の詳細は名古屋大学 IDEA STOA のプロジェクトページに掲載されています → <a href="https://ideastoa.aip.nagoya-u.ac.jp/jikken/project/project-6106/" target="_blank" rel="noopener">project-6106</a></p>
+  </section>
+
+  <section class="section cta-block">
+    <p class="section-label">try it</p>
+    <h2>次の交流会、あと一言を足しに行こう。</h2>
+    <p>QRコードを読み込んで、自分のカードを作るところから。</p>
+    <div class="cta-row" style="margin-top:0;">
+      <a class="btn btn-primary" href="https://sunsungogo.github.io/firstcontact-sync/" target="_blank" rel="noopener">Habitusを使ってみる →</a>
+    </div>
+  </section>
+
+  <section class="section contact-section">
+    <a class="contact-card" href="contact.html" id="contact-card">
+      <span class="contact-eyebrow">for organizations / communities</span>
+      <h3>「うちでも使ってみたい」と思ったら。</h3>
+      <p>コミュニティ・イベント・企業での導入について、気軽にご相談ください。話を聞くだけでも大歓迎です。</p>
+      <span class="contact-arrow-row">お問い合わせフォームへ <span class="contact-arrow">→</span></span>
+    </a>
+  </section>
+
+  <footer>
+    <p><a href="index.html">← sangokameda.com</a> &nbsp;/&nbsp; © 2026 Sango Kameda</p>
+  </footer>
+
+</div>
+
+<script>
+const canvas = document.getElementById('network-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const nodes = [];
+const NODE_COUNT = 28;
+for (let i = 0; i < NODE_COUNT; i++) {
+  nodes.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    r: Math.random() * 3 + 1.5
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 160) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.strokeStyle = `rgba(232, 71, 42, ${(1 - dist / 160) * 0.4})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+    }
+  }
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232, 71, 42, 0.5)';
+    ctx.fill();
+  });
+  nodes.forEach(n => {
+    n.x += n.vx;
+    n.y += n.vy;
+    if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+    if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+const sections = document.querySelectorAll('.section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.05 });
+sections.forEach(s => observer.observe(s));
+
+// floating contact button — appears once you've scrolled past the header
+const floatContact = document.getElementById('float-contact');
+function toggleFloatContact() {
+  if (window.scrollY > 300) {
+    floatContact.classList.add('shown');
+  } else {
+    floatContact.classList.remove('shown');
+  }
+}
+window.addEventListener('scroll', toggleFloatContact, { passive: true });
+toggleFloatContact();
+
+// contact card — cursor-follow glow
+const contactCard = document.getElementById('contact-card');
+if (contactCard) {
+  contactCard.addEventListener('mousemove', (e) => {
+    const rect = contactCard.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    contactCard.style.setProperty('--mx', x + '%');
+    contactCard.style.setProperty('--my', y + '%');
+  });
+}
+</script>
+</body>
+</html>
