@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Habitus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f3f0;
+    --fg: #111;
+    --muted: #888;
+    --accent: #E8472A;
+    --accent-light: #fce0d8;
+    --line: #ddd;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Noto Sans JP', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  header {
+    padding: 72px 0 48px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(30px, 5vw, 44px);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .lead {
+    font-size: 14px;
+    color: #333;
+    margin-top: 20px;
+    line-height: 2;
+  }
+
+  nav {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--accent); }
+
+  form {
+    padding: 48px 0 64px;
+  }
+
+  .field {
+    margin-bottom: 28px;
+  }
+
+  .field label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .field .required {
+    color: var(--accent);
+    margin-left: 4px;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--fg);
+    background: rgba(255,255,255,0.6);
+    border: 1px solid var(--line);
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 140px;
+    line-height: 1.8;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .submit-row {
+    margin-top: 40px;
+  }
+
+  .btn-submit {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    padding: 16px 36px;
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid var(--accent);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+
+  .btn-submit:hover {
+    background: #c93a20;
+    border-color: #c93a20;
+    transform: translateY(-1px);
+  }
+
+  .fallback-note {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.9;
+  }
+
+  .fallback-note a {
+    color: var(--muted);
+    text-decoration: underline;
+  }
+
+  .fallback-note a:hover { color: var(--accent); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 40px 0;
+  }
+
+  footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  footer a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 560px) {
+    .container { padding: 0 24px; }
+    .field-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <nav>
+    <a href="habitus.html">← Habitusにもどる</a>
+  </nav>
+
+  <header>
+    <p class="eyebrow">Contact</p>
+    <h1>導入・お話、聞かせてください。</h1>
+    <p class="lead">コミュニティやイベント、企業でのHabitus導入について。まだふわっとした検討段階でも大丈夫です。下のフォームを送信すると、内容が入った状態でメールが立ち上がります。</p>
+  </header>
+
+  <form id="contact-form">
+    <div class="field">
+      <label for="name">お名前<span class="required">*</span></label>
+      <input type="text" id="name" name="name" required>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="org">団体名・会社名</label>
+        <input type="text" id="org" name="org">
+      </div>
+      <div class="field">
+        <label for="type">ご用件</label>
+        <select id="type" name="type">
+          <option value="導入について相談したい">導入について相談したい</option>
+          <option value="イベント・コミュニティでの利用について">イベント・コミュニティでの利用について</option>
+          <option value="取材・掲載について">取材・掲載について</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="email">返信用メールアドレス<span class="required">*</span></label>
+      <input type="email" id="email" name="email" required>
+    </div>
+
+    <div class="field">
+      <label for="message">メッセージ</label>
+      <textarea id="message" name="message" placeholder="使いたい場面や、聞いてみたいことなど、ざっくりで大丈夫です。"></textarea>
+    </div>
+
+    <div class="submit-row">
+      <button type="submit" class="btn-submit">この内容でメールを送る →</button>
+      <p class="fallback-note">送信するとメールアプリが立ち上がります。うまく開かない場合は <a href="mailto:sangokameda@gmail.com">sangokameda@gmail.com</a> まで直接どうぞ。</p>
+    </div>
+  </form>
+
+  <footer>
+    <p><a href="index.html">← sangokameda.com</a> &nbsp;/&nbsp; © 2026 Sango Kameda</p>
+  </footer>
+
+</div>
+
+<script>
+document.getElementById('contact-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const org = document.getElementById('org').value.trim();
+  const type = document.getElementById('type').value;
+  const email = document.getElementById('email').value.trim();
+  const message = document.getElementById('message').value.trim();
+
+  const subject = `【Habitus】${type}（${name}様）`;
+  const bodyLines = [
+    `お名前: ${name}`,
+    `団体名・会社名: ${org || '(未記入)'}`,
+    `ご用件: ${type}`,
+    `返信用メールアドレス: ${email}`,
+    '',
+    'メッセージ:',
+    message || '(未記入)'
+  ];
+  const body = bodyLines.join('\n');
+
+  const mailto = `mailto:sangokameda@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailto;
+});
+</script>
+</body>
+</html>
