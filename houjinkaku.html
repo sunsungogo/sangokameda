@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>法人格に、人間はいるか — 亀田山瑚</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f3f0;
+    --fg: #111;
+    --muted: #888;
+    --accent: #E8472A;
+    --accent-light: #fce0d8;
+    --line: #ddd;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Noto Sans JP', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  #network-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.18;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    padding: 80px 0 56px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.1s;
+  }
+
+  .eyebrow a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .eyebrow a:hover { color: var(--accent); }
+  .eyebrow-sep { color: var(--line); }
+
+  .entry-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.2s;
+  }
+
+  .entry-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    border: 1px solid var(--accent-light);
+    padding: 3px 8px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.3s;
+  }
+
+  .subtitle {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.7;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.4s;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.5s;
+  }
+
+  .meta-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  nav {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: rgba(245,243,240,0.95);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+
+  .nav-inner {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+  }
+
+  nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--accent); }
+
+  .toc {
+    margin: 56px 0 0;
+    padding: 28px 32px;
+    border-left: 2px solid var(--accent);
+    background: rgba(232, 71, 42, 0.03);
+  }
+
+  .toc-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .toc ol {
+    list-style: none;
+    counter-reset: toc;
+  }
+
+  .toc li {
+    counter-increment: toc;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .toc a {
+    font-size: 13px;
+    color: var(--fg);
+    text-decoration: none;
+    line-height: 1.5;
+    transition: color 0.2s;
+  }
+
+  .toc a:hover { color: var(--accent); }
+
+  .article-body {
+    padding: 72px 0 80px;
+  }
+
+  .article-section {
+    margin-bottom: 72px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .article-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-number {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(20px, 3.5vw, 28px);
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 32px;
+    letter-spacing: 0.01em;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  p {
+    font-size: 15px;
+    line-height: 2.1;
+    color: #2a2a2a;
+    margin-bottom: 1.6em;
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  strong {
+    font-weight: 700;
+    color: var(--fg);
+  }
+
+  blockquote {
+    border-left: 2px solid var(--accent);
+    padding: 16px 24px;
+    margin: 36px 0;
+    background: rgba(232, 71, 42, 0.03);
+  }
+
+  blockquote p {
+    font-size: 14px;
+    line-height: 1.9;
+    color: #444;
+    margin-bottom: 0;
+  }
+
+  .sep {
+    text-align: center;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    margin: 48px 0;
+  }
+
+  .end-note {
+    margin-top: 72px;
+    padding-top: 40px;
+    border-top: 1px solid var(--line);
+  }
+
+  .end-note p {
+    font-size: 13px;
+    line-height: 1.9;
+    color: #555;
+  }
+
+  .ref-list {
+    margin-top: 16px;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .ref-list li {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.9;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono);
+    letter-spacing: 0.02em;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 36px 0;
+  }
+
+  footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  footer a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .container { padding: 0 24px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="network-canvas"></canvas>
+
+<div class="container">
+
+  <header>
+    <div class="eyebrow">
+      <a href="index.html">sangokameda.com</a>
+      <span class="eyebrow-sep">/</span>
+      <a href="log.html">log</a>
+      <span class="eyebrow-sep">/</span>
+      <span>article</span>
+    </div>
+
+    <div class="entry-tags">
+      <span class="entry-tag">組織</span>
+      <span class="entry-tag">人間関係</span>
+      <span class="entry-tag">心理学</span>
+      <span class="entry-tag">サイバー</span>
+    </div>
+
+    <h1>法人格に、人間はいるか</h1>
+    <p class="subtitle">GMOハッキング事件から考える、関係設計と社会構造</p>
+
+    <div class="meta-row">
+      <span class="meta-date">2026.10</span>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html">← home</a>
+      <a href="log.html">log</a>
+    </div>
+  </nav>
+
+  <div class="toc">
+    <p class="toc-label">目次</p>
+    <ol>
+      <li><a href="#s1">攻撃される組織は、何を軽視していたか</a></li>
+      <li><a href="#s2">これは「劇場」だった</a></li>
+      <li><a href="#s3">ハッカーを、個人の問題にしていいのか</a></li>
+      <li><a href="#s4">思考をカットする、個人と組織</a></li>
+      <li><a href="#s5">あなたは今、何に満たされていますか</a></li>
+      <li><a href="#s6">見えるようにしたい</a></li>
+    </ol>
+  </div>
+
+  <div class="article-body">
+
+    <section class="article-section" id="intro">
+      <p>2026年10月、GMOインターネットグループが運営する投資家向けクラウドサービスが大規模なサイバー攻撃を受けた。2万人以上の利用者の認証情報が流出し、FX口座で不正取引が行われ、金融被害が相次いだ。攻撃者はGMOに対して約80億円を要求し、応じなければ情報を公開すると脅迫した。</p>
+      <p>ニュースはこの事件を「セキュリティの失敗」として報じた。でも私はそう読まなかった。これは<strong>関係設計の失敗</strong>だと思った。</p>
+    </section>
+
+    <!-- S1 -->
+    <section class="article-section" id="s1">
+      <span class="section-number">01</span>
+      <h2>攻撃される組織は、何を軽視していたか</h2>
+      <p>後から明らかになったことがある。GMO社内のホワイトハッカーが、攻撃より前にセキュリティ上の問題を指摘していた。それでも対応は後回しにされた。「サービスの可用性」や「他の優先事項」を理由に。</p>
+      <p>これは珍しい話じゃない。組織研究では、内部からの警告が無視されるメカニズムが繰り返し記録されている。メンバーが懸念を声に出せる環境、いわゆる「心理的安全性」が低い組織では、問題は表面化する前に埋もれる。声を上げることのコストが、黙ることのコストを上回ってしまうからだ。</p>
+      <p>効率と利益に最適化された組織の中で、人間の感覚は少しずつ削られていく。法人格の中に、人間はいる。ただその人間性が「見えない設計」になっていく。</p>
+    </section>
+
+    <!-- S2 -->
+    <section class="article-section" id="s2">
+      <span class="section-number">02</span>
+      <h2>これは「劇場」だった</h2>
+      <p>今回の攻撃には、もう一つの顔がある。</p>
+      <p>攻撃者は期限を設け、SNSで拡散され、大衆が固唾を飲んで見守る「劇場」を作り上げた。専門家はこれを「劇場型サイバー攻撃」と呼ぶ。大衆の注目・感情・拡散を企業への圧力として設計する手口だ。攻撃者はSNS上の反応を見ながら世間の関心の大きさをはかり、注目が大きくなればさらに過激な行動に出る動機にする。</p>
+      <p>これは単なる恐喝ではない。<strong>人間の感情と関係性そのものを武器にした設計</strong>だ。</p>
+      <p>そしてこの手口は、今後さらに広がる可能性がある。近年、ランサムウェアはツールとして売買されるようになり、高度な技術がなくても「攻撃に参加できる」時代になってきている。技術力より、注目を集める力・感情を動かす力が、攻撃者の武器になっていく。誰もが劇場の演出者になれる時代に、私たちは入りつつある。</p>
+    </section>
+
+    <!-- S3 -->
+    <section class="article-section" id="s3">
+      <span class="section-number">03</span>
+      <h2>ハッカーを、個人の問題にしていいのか</h2>
+      <p>攻撃者を「悪人」として処理することは簡単だ。でもそこで思考を止めると、見えなくなるものがある。</p>
+      <p>心理学では、人間の動機には3つの土台が必要だと言われている。自分で選んでいるという感覚、自分に能力があるという感覚、そして誰かとつながっているという感覚。この3つが満たされないとき、人は外側から与えられる刺激——お金、力、承認——に過剰に依存するようになる。</p>
+      <p>サイバー犯罪の研究が示すのは、金銭的動機だけでは説明できないハッカーの存在だ。高い技術力を持ちながら、それが報われる場所がなかった。承認されたかった。居場所がほしかった。「力の逆転」として破壊を選んだ人間が、確かにいる。今回の「劇場」も、そのレンズで見ると違って見える。お金だけが目的なら、これほど派手にやる必要はない。注目、恐怖、反応——それ自体が報酬になっていた可能性がある。</p>
+      <p>これは擁護じゃない。「個人が悪い」で終わらせることで、私たちは社会の設計ミスを見ないふりをしている。関係性の中で認められなかった人間が、どこに向かうか。それは社会全体の問題だ。</p>
+    </section>
+
+    <!-- S4 -->
+    <section class="article-section" id="s4">
+      <span class="section-number">04</span>
+      <h2>思考をカットする、個人と組織</h2>
+      <p>組織も、個人も、余裕を失うと同じことをする。<strong>目の前の相手が人間であるという感覚を、削る。</strong></p>
+      <p>心理学にはこんな概念がある。人は自分の行動を正当化するとき、相手を「人間として見ること」をやめることがある。組織の論理に従っているだけ、システムの一部として動いているだけ、と感じることで、本来感じるはずの罪悪感や共感が切り離される。</p>
+      <p>悪意じゃない。思考のコストを下げるための、ある意味自然な反応だ。経営判断の場で「ユーザー」は数字になる。日常の中で他者は「障害」や「手段」になる。でもその「カット」が積み重なったとき、組織は人を傷つける機械になり、個人は満たされない空洞を抱える。</p>
+    </section>
+
+    <!-- S5 -->
+    <section class="article-section" id="s5">
+      <span class="section-number">05</span>
+      <h2>あなたは今、何に満たされていますか</h2>
+      <p>ここで誰かを批判したいわけじゃない。</p>
+      <p>ただ一つ、問いたいことがある。</p>
+      <blockquote>
+        <p>自分が何に満たされるか、あなたは知っていますか。</p>
+      </blockquote>
+      <p>人間の欲求には段階がある、とよく言われる。安全、所属、承認、そして自己実現。重要なのは、下の層が満たされていないと、人はそこに引き戻されるということだ。自己理解がないまま生きると、自分が今どの層にいるかも分からないまま、手っ取り早い刺激に流れる。お金、承認、力、怒り。それ自体が悪いんじゃなく、それが「本当の満足」じゃないのに本物だと思ってしまうことが、問題だ。</p>
+      <p>自分の満足の輪郭が見えていないと、他者との関係も歪む。組織の設計も歪む。そして社会も、少しずつ壊れていく。</p>
+    </section>
+
+    <!-- S6 -->
+    <section class="article-section" id="s6">
+      <span class="section-number">06</span>
+      <h2>見えるようにしたい</h2>
+      <p>経済構造を変えることは、今日の私にはできない。</p>
+      <p>でも<strong>自分と他者の満足を可視化すること</strong>は、今日からできる。関係性の中にある感情、ありのままの欲求、「私はこれで満たされる」という輪郭。それを見えるようにする設計。これからの時代、誰もが劇場の演出者になれるからこそ、その前に自分自身の欲求と向き合うことが必要になってくると思っている。</p>
+      <p>それが、私が人間関係設計室でやっていきたいことだ。</p>
+      <p>人間はいる。ただ、見えなくなっているだけだ。だから、見えるようにしたい。</p>
+    </section>
+
+    <div class="sep">— —</div>
+
+    <div class="end-note">
+      <p>参考・背景理論</p>
+      <ul class="ref-list">
+        <li>心理的安全性：Amy Edmondson（1999）Psychological Safety and Learning Behavior in Work Teams</li>
+        <li>自己決定理論：Edward Deci &amp; Richard Ryan（1985）Intrinsic Motivation and Self-Determination in Human Behavior</li>
+        <li>道徳的離脱：Albert Bandura（1999）Moral Disengagement in the Perpetration of Inhumanities</li>
+        <li>欲求階層説：Abraham Maslow（1943）A Theory of Human Motivation</li>
+      </ul>
+    </div>
+
+  </div><!-- /.article-body -->
+
+  <footer>
+    <p><a href="log.html">← log へ戻る</a> &nbsp;/&nbsp; <a href="index.html">sangokameda.com</a> &nbsp;/&nbsp; © 2026 Sango Kameda</p>
+  </footer>
+
+</div>
+
+<script>
+const canvas = document.getElementById('network-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const nodes = [];
+const NODE_COUNT = 28;
+for (let i = 0; i < NODE_COUNT; i++) {
+  nodes.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    r: Math.random() * 3 + 1.5
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 160) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.strokeStyle = `rgba(232, 71, 42, ${(1 - dist / 160) * 0.4})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+    }
+  }
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232, 71, 42, 0.5)';
+    ctx.fill();
+  });
+  nodes.forEach(n => {
+    n.x += n.vx;
+    n.y += n.vy;
+    if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+    if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+const sections = document.querySelectorAll('.article-section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
